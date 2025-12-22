@@ -1,0 +1,16 @@
+{
+    "name": "snake-game-typescript",
+    "version": "1.0.0",
+    "description": "Classic Snake Game in TypeScript",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "serve": "npx serve .",
+        "dev": "tsc -w & npx serve ."
+    },
+    "devDependencies": {
+        "typescript": "^5.3.0",
+        "serve": "^14.2.0"
+    }
+}

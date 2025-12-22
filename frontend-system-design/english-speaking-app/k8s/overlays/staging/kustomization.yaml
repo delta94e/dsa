@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: speakup-staging
+
+resources:
+  - ../../base
+
+namePrefix: staging-
+
+commonLabels:
+  environment: staging
+
+# Override replicas for staging
+replicas:
+  - name: frontend
+    count: 1
+  - name: backend
+    count: 1
+
+# Patch for staging-specific configs
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "128Mi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "100m"
+    target:
+      kind: Deployment
+
+configMapGenerator:
+  - name: app-config
+    behavior: replace
+    literals:
+      - API_URL=https://api-staging.speakup.example.com

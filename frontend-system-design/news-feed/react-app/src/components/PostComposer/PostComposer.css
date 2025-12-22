@@ -1,0 +1,114 @@
+.post-composer {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.post-composer--expanded {
+    box-shadow: var(--shadow-md);
+}
+
+.post-composer__header {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.post-composer__input {
+    flex: 1;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 20px;
+    padding: 10px 16px;
+    font-size: 15px;
+    color: var(--text-primary);
+    resize: none;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.post-composer--expanded .post-composer__input {
+    border-radius: 12px;
+    min-height: 80px;
+}
+
+.post-composer__input:focus {
+    outline: none;
+    background: var(--bg-hover);
+}
+
+.post-composer__input::placeholder {
+    color: var(--text-secondary);
+}
+
+.post-composer__toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-top: 12px;
+}
+
+.post-composer__tool {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.post-composer__tool:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.post-composer__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.post-composer__cancel {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.post-composer__cancel:hover {
+    background: var(--bg-hover);
+}
+
+.post-composer__submit {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 8px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.post-composer__submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.post-composer__submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

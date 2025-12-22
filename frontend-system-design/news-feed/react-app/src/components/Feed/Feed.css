@@ -1,0 +1,62 @@
+.feed {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.feed__sentinel {
+    height: 1px;
+}
+
+.feed__error {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.feed__error-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.feed__error p {
+    margin: 0 0 20px;
+    font-size: 15px;
+}
+
+.feed__retry {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.feed__retry:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.feed__end {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+}
+
+.feed__end span {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.feed__end p {
+    margin: 0;
+    font-size: 15px;
+}

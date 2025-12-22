@@ -1,0 +1,220 @@
+.post-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.post-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Header */
+.post-card__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 16px 0;
+}
+
+.post-card__author-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.post-card__author-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.post-card__meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.post-card__menu {
+    background: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.post-card__menu:hover {
+    background: var(--bg-hover);
+}
+
+/* Content */
+.post-card__content {
+    padding: 12px 16px;
+}
+
+.post-card__text {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.post-card__image-container {
+    margin-top: 12px;
+    margin-left: -16px;
+    margin-right: -16px;
+    position: relative;
+    background: var(--bg-tertiary);
+    min-height: 200px;
+}
+
+.post-card__image-placeholder {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-hover) 50%, var(--bg-tertiary) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.post-card__image {
+    width: 100%;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.post-card__image.loaded {
+    opacity: 1;
+}
+
+/* Stats */
+.post-card__stats {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.post-card__reactions-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Actions */
+.post-card__actions {
+    display: flex;
+    padding: 8px 16px 12px;
+    border-top: 1px solid var(--border-color);
+    gap: 4px;
+}
+
+.post-card__action-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.post-card__action {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.post-card__action:hover {
+    background: var(--bg-hover);
+}
+
+.post-card__action--active {
+    color: var(--primary);
+}
+
+.post-card__reaction-emoji {
+    font-size: 18px;
+}
+
+/* Reaction Picker */
+.reaction-picker {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-secondary);
+    border-radius: 40px;
+    padding: 8px 12px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+    z-index: 100;
+    animation: fadeInUp 0.2s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.reaction-picker__item {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+}
+
+.reaction-picker__item:hover {
+    transform: scale(1.3);
+}
+
+.reaction-picker__item.active {
+    background: var(--bg-hover);
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}

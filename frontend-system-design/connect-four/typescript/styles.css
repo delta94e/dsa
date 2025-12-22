@@ -1,0 +1,306 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════════════════════════ */
+
+.connect-four {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+.header {
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #ff4757, #ffa502);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.status {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.status.red {
+    color: #ff4757;
+}
+
+.status.yellow {
+    color: #ffa502;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOARD
+   ═══════════════════════════════════════════════════════════════ */
+
+.board-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.preview-row {
+    display: flex;
+    gap: 8px;
+    padding: 0 10px;
+}
+
+.preview-cell {
+    width: 60px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.preview-cell.preview-red::after {
+    content: '';
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff6b7a, #ff4757);
+    opacity: 0.5;
+}
+
+.preview-cell.preview-yellow::after {
+    content: '';
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffc048, #ffa502);
+    opacity: 0.5;
+}
+
+.board {
+    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        inset 0 2px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.row {
+    display: flex;
+    gap: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CELLS
+   ═══════════════════════════════════════════════════════════════ */
+
+.cell {
+    width: 60px;
+    height: 60px;
+    background: #1a1a2e;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.1s;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+}
+
+.cell:hover {
+    transform: scale(1.05);
+}
+
+.cell .piece {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.cell.empty .piece {
+    background: transparent;
+}
+
+.cell.red .piece {
+    background: radial-gradient(circle at 30% 30%, #ff6b7a, #ff4757, #cc3a47);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+.cell.yellow .piece {
+    background: radial-gradient(circle at 30% 30%, #ffc048, #ffa502, #cc8402);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WIN HIGHLIGHT
+   ═══════════════════════════════════════════════════════════════ */
+
+.cell.winning {
+    animation: pulse 0.6s ease infinite alternate;
+}
+
+.cell.winning .piece {
+    box-shadow:
+        0 0 20px rgba(255, 255, 255, 0.8),
+        0 0 40px rgba(255, 255, 255, 0.4),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulse {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.1);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DROP ANIMATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.cell.dropping .piece {
+    animation: drop 0.5s ease-out;
+}
+
+@keyframes drop {
+    from {
+        transform: translateY(-400px);
+        opacity: 0.5;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Row-based animation duration */
+.cell[data-row="0"].dropping .piece {
+    animation-duration: 0.15s;
+}
+
+.cell[data-row="1"].dropping .piece {
+    animation-duration: 0.22s;
+}
+
+.cell[data-row="2"].dropping .piece {
+    animation-duration: 0.30s;
+}
+
+.cell[data-row="3"].dropping .piece {
+    animation-duration: 0.38s;
+}
+
+.cell[data-row="4"].dropping .piece {
+    animation-duration: 0.46s;
+}
+
+.cell[data-row="5"].dropping .piece {
+    animation-duration: 0.55s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTROLS
+   ═══════════════════════════════════════════════════════════════ */
+
+.controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.controls button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.restart-btn {
+    background: linear-gradient(180deg, #4ade80, #22c55e);
+    color: #fff;
+}
+
+.restart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+}
+
+.undo-btn {
+    background: linear-gradient(180deg, #94a3b8, #64748b);
+    color: #fff;
+}
+
+.undo-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+}
+
+.undo-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 500px) {
+    .header h1 {
+        font-size: 1.8rem;
+    }
+
+    .cell {
+        width: 45px;
+        height: 45px;
+    }
+
+    .cell .piece {
+        width: 38px;
+        height: 38px;
+    }
+
+    .preview-cell {
+        width: 45px;
+        height: 25px;
+    }
+
+    .preview-cell.preview-red::after,
+    .preview-cell.preview-yellow::after {
+        width: 38px;
+        height: 38px;
+    }
+}

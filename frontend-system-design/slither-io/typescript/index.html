@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slither.io Clone</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="startScreen" class="start-screen">
+        <div class="start-content">
+            <h1>🐍 Slither.io</h1>
+            <p>Eat orbs to grow. Avoid other snakes!</p>
+            <input type="text" id="nameInput" placeholder="Enter your name" maxlength="15">
+            <button id="playButton">Play</button>
+            <div class="controls">
+                <p>🖱️ Move mouse to steer</p>
+                <p>🔥 Hold click or Space to boost</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./dist/index.js"></script>
+</body>
+
+</html>

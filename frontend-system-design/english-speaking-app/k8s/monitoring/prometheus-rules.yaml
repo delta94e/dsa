@@ -1,0 +1,91 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: speakup-alerts
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: speakup.rules
+      rules:
+        # High Error Rate
+        - alert: HighErrorRate
+          expr: |
+            sum(rate(http_requests_total{namespace="speakup", status=~"5.."}[5m])) 
+            / sum(rate(http_requests_total{namespace="speakup"}[5m])) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High error rate detected"
+            description: "Error rate is above 5% for the last 5 minutes"
+
+        # Pod Not Ready
+        - alert: PodNotReady
+          expr: |
+            kube_pod_status_ready{namespace="speakup", condition="false"} == 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.pod }} is not ready"
+            description: "Pod {{ $labels.pod }} has been not ready for more than 5 minutes"
+
+        # High Memory Usage
+        - alert: HighMemoryUsage
+          expr: |
+            container_memory_usage_bytes{namespace="speakup"} 
+            / container_spec_memory_limit_bytes{namespace="speakup"} > 0.85
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High memory usage detected"
+            description: "Container {{ $labels.container }} memory usage is above 85%"
+
+        # High CPU Usage
+        - alert: HighCPUUsage
+          expr: |
+            rate(container_cpu_usage_seconds_total{namespace="speakup"}[5m]) 
+            / container_spec_cpu_quota{namespace="speakup"} * 100000 > 85
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage detected"
+            description: "Container {{ $labels.container }} CPU usage is above 85%"
+
+        # Pod Restart
+        - alert: PodRestartingTooOften
+          expr: |
+            increase(kube_pod_container_status_restarts_total{namespace="speakup"}[1h]) > 3
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.pod }} is restarting frequently"
+            description: "Pod {{ $labels.pod }} has restarted more than 3 times in the last hour"
+
+        # Deployment Replicas Mismatch
+        - alert: DeploymentReplicasMismatch
+          expr: |
+            kube_deployment_spec_replicas{namespace="speakup"} 
+            != kube_deployment_status_replicas_available{namespace="speakup"}
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Deployment {{ $labels.deployment }} replicas mismatch"
+            description: "Deployment {{ $labels.deployment }} has not matched the expected number of replicas for 10 minutes"
+
+        # WebSocket Connection Issues
+        - alert: WebSocketConnectionsDrop
+          expr: |
+            decrease(websocket_connections_total{namespace="speakup"}[5m]) > 10
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "WebSocket connections dropping"
+            description: "WebSocket connections have dropped significantly in the last 5 minutes"

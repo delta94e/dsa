@@ -1,0 +1,86 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""English proficiency level"""
+enum Level {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+"""An object with a Globally Unique ID"""
+interface Node {
+  """Globally unique identifier"""
+  id: ID!
+}
+
+"""Information about pagination"""
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+"""A room participant"""
+type ParticipantType {
+  avatarUrl: String
+  id: ID!
+  isHandRaised: Boolean!
+  isMuted: Boolean!
+  isSpeaking: Boolean!
+  joinedAt: DateTime!
+  name: String!
+}
+
+type Query {
+  """Get a single room by ID"""
+  room(id: ID!): Room
+
+  """Get participants of a room"""
+  roomParticipants(roomId: ID!): [ParticipantType!]!
+
+  """Get paginated list of rooms"""
+  rooms(after: String, before: String, first: Int = 10, last: Int, level: Level, search: String): RoomConnection!
+}
+
+"""A practice room"""
+type Room implements Node {
+  createdAt: DateTime!
+  hasPassword: Boolean!
+  hostId: String!
+  id: ID!
+  level: Level!
+  maxParticipants: Float!
+  name: String!
+  participantCount: Float!
+  tags: [String!]!
+  topic: String!
+  type: RoomType!
+}
+
+type RoomConnection {
+  edges: [RoomTypeEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""Room visibility type"""
+enum RoomType {
+  private
+  public
+}
+
+type RoomTypeEdge {
+  cursor: String!
+  node: Room!
+}

@@ -1,0 +1,62 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - button [ref=e5] [cursor=pointer]:
+        - img [ref=e7]
+      - link "Sign In" [ref=e9] [cursor=pointer]:
+        - /url: /login
+        - button "Sign In" [ref=e10]:
+          - generic [ref=e12]: Sign In
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e16]: 🌍 Join 10,000+ learners worldwide
+        - heading "Practice English Speaking With Real People & AI" [level=1] [ref=e17]:
+          - text: Practice English Speaking
+          - text: With Real People & AI
+        - paragraph [ref=e18]: Join voice rooms to practice English with learners from around the world, or chat with our AI tutor anytime, anywhere.
+        - generic [ref=e19]:
+          - link "Browse Rooms" [ref=e20] [cursor=pointer]:
+            - /url: /rooms
+            - button "Browse Rooms" [ref=e21]:
+              - generic [ref=e22]:
+                - img [ref=e24]
+                - generic [ref=e27]: Browse Rooms
+          - link "Practice with AI" [ref=e28] [cursor=pointer]:
+            - /url: /ai-practice
+            - button "Practice with AI" [ref=e29]:
+              - generic [ref=e30]:
+                - img [ref=e32]
+                - generic [ref=e36]: Practice with AI
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - img [ref=e40]
+          - heading "Global Community" [level=3] [ref=e44]
+          - paragraph [ref=e45]: Connect with English learners from over 50 countries in real-time voice rooms.
+        - generic [ref=e46]:
+          - img [ref=e48]
+          - heading "AI Tutor 24/7" [level=3] [ref=e52]
+          - paragraph [ref=e53]: Practice speaking anytime with our AI that adapts to your level and gives feedback.
+        - generic [ref=e54]:
+          - img [ref=e56]
+          - heading "Level-Based Rooms" [level=3] [ref=e61]
+          - paragraph [ref=e62]: Find rooms that match your skill level from A1 (Beginner) to C2 (Proficient).
+      - generic [ref=e63]:
+        - heading "All CEFR Levels Supported" [level=2] [ref=e64]
+        - generic [ref=e65]:
+          - generic [ref=e67]: A1 - Beginner
+          - generic [ref=e69]: A2 - Elementary
+          - generic [ref=e71]: B1 - Intermediate
+          - generic [ref=e73]: B2 - Upper-Intermediate
+          - generic [ref=e75]: C1 - Advanced
+          - generic [ref=e77]: C2 - Proficient
+      - link "Start Speaking Now" [ref=e79] [cursor=pointer]:
+        - /url: /rooms
+        - button "Start Speaking Now" [ref=e80]:
+          - generic [ref=e81]:
+            - generic [ref=e82]: Start Speaking Now
+            - img [ref=e84]
+  - alert [ref=e87]
+```
