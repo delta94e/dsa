@@ -42,13 +42,18 @@ interface UseRoomSessionReturn {
     currentUser: User;
     isMuted: boolean;
     isVideoEnabled: boolean;
+    isScreenSharing: boolean;
+    isWhiteboardOpen: boolean;
     vadActive: boolean;
     isHandRaised: boolean;
     localStream: MediaStream | null;
+    screenStream: MediaStream | null;
 
     // Actions
     handleToggleMute: () => void;
     handleToggleVideo: () => void;
+    handleToggleScreenShare: () => void;
+    handleToggleWhiteboard: () => void;
     handleLeave: () => void;
     handleToggleHand: () => void;
     sendReaction: (type: ReactionType) => void;
@@ -100,13 +105,16 @@ export function useRoomSession({ roomId }: UseRoomSessionOptions): UseRoomSessio
     const { data: room, isLoading: isRoomLoading, error: roomError } = useRoom(roomId);
 
     // Media controls
-    const { isMuted, isVideoEnabled, toggleMute, toggleVideo, initMedia, cleanup, localStream, trackVersion } = useMediaStore();
+    const { isMuted, isVideoEnabled, isScreenSharing, toggleMute, toggleVideo, startScreenShare, stopScreenShare, initMedia, cleanup, localStream, screenStream, trackVersion } = useMediaStore();
 
     // Signal handler ref
     const signalHandlerRef = useRef<(from: string, type: string, data: unknown) => void>();
 
     // Reactions
     const { reactions, addReaction } = useReactions();
+
+    // Whiteboard open state (synced across users)
+    const [isWhiteboardOpen, setIsWhiteboardOpen] = useState(false);
 
     // Socket connection
     const {
@@ -120,6 +128,7 @@ export function useRoomSession({ roomId }: UseRoomSessionOptions): UseRoomSessio
         sendRaiseHand,
         sendReaction,
         joinWithPassword,
+        sendWhiteboardToggle,
     } = useRoomSocket({
         roomId,
         user: currentUser,
@@ -141,6 +150,8 @@ export function useRoomSession({ roomId }: UseRoomSessionOptions): UseRoomSessio
             setPasswordErrorMsg(undefined);
         },
         onPasswordError: (error) => setPasswordErrorMsg(error),
+        onWhiteboardToggled: (isOpen) => setIsWhiteboardOpen(isOpen),
+        onWhiteboardStateOnJoin: (isOpen) => setIsWhiteboardOpen(isOpen),
     });
 
     // WebRTC
@@ -278,6 +289,20 @@ export function useRoomSession({ roomId }: UseRoomSessionOptions): UseRoomSessio
         sendRaiseHand(newState);
     }, [isHandRaised, sendRaiseHand]);
 
+    const handleToggleScreenShare = useCallback(async () => {
+        if (isScreenSharing) {
+            stopScreenShare();
+        } else {
+            await startScreenShare();
+        }
+    }, [isScreenSharing, startScreenShare, stopScreenShare]);
+
+    const handleToggleWhiteboard = useCallback(() => {
+        const newState = !isWhiteboardOpen;
+        setIsWhiteboardOpen(newState);
+        sendWhiteboardToggle(newState);
+    }, [isWhiteboardOpen, sendWhiteboardToggle]);
+
     const closePasswordModal = useCallback(() => {
         setShowPasswordModal(false);
         router.push('/rooms');
@@ -299,11 +324,16 @@ export function useRoomSession({ roomId }: UseRoomSessionOptions): UseRoomSessio
         currentUser,
         isMuted,
         isVideoEnabled,
+        isScreenSharing,
+        isWhiteboardOpen,
         vadActive,
         isHandRaised,
         localStream,
+        screenStream,
         handleToggleMute,
         handleToggleVideo,
+        handleToggleScreenShare,
+        handleToggleWhiteboard,
         handleLeave,
         handleToggleHand,
         sendReaction,
@@ -314,3 +344,4 @@ export function useRoomSession({ roomId }: UseRoomSessionOptions): UseRoomSessio
         closePasswordModal,
     };
 }
+

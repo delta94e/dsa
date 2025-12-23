@@ -53,6 +53,8 @@ interface UseRoomSocketProps {
     onReaction?: (userId: string, userName: string, type: string) => void;
     onPasswordRequired?: () => void; // Called when room requires password
     onPasswordError?: (error: string) => void; // Called when password is incorrect
+    onWhiteboardToggled?: (isOpen: boolean, userId: string) => void; // Called when whiteboard state changes
+    onWhiteboardStateOnJoin?: (isOpen: boolean) => void; // Called on join with current whiteboard state
 }
 
 export function useRoomSocket({
@@ -68,6 +70,8 @@ export function useRoomSocket({
     onReaction,
     onPasswordRequired,
     onPasswordError,
+    onWhiteboardToggled,
+    onWhiteboardStateOnJoin,
 }: UseRoomSocketProps) {
     const socketRef = useRef<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
@@ -86,6 +90,8 @@ export function useRoomSocket({
         onReaction,
         onPasswordRequired,
         onPasswordError,
+        onWhiteboardToggled,
+        onWhiteboardStateOnJoin,
     });
 
     // Update refs when callbacks change
@@ -101,6 +107,8 @@ export function useRoomSocket({
             onReaction,
             onPasswordRequired,
             onPasswordError,
+            onWhiteboardToggled,
+            onWhiteboardStateOnJoin,
         };
     });
 
@@ -137,10 +145,14 @@ export function useRoomSocket({
             setIsConnected(false);
         });
 
-        socket.on('joined', ({ participants: roomParticipants }: JoinedPayload) => {
-            console.log('Joined room with participants:', roomParticipants);
+        socket.on('joined', ({ participants: roomParticipants, isWhiteboardOpen }: JoinedPayload & { isWhiteboardOpen?: boolean }) => {
+            console.log('Joined room with participants:', roomParticipants, 'whiteboard:', isWhiteboardOpen);
             setPasswordError(null); // Clear any previous errors
             setParticipants(roomParticipants);
+            // Notify about whiteboard state on join
+            if (isWhiteboardOpen !== undefined) {
+                callbacksRef.current.onWhiteboardStateOnJoin?.(isWhiteboardOpen);
+            }
         });
 
         // Handle password errors
@@ -205,6 +217,12 @@ export function useRoomSocket({
         socket.on('signal', ({ from, type, data }: SignalPayload) => {
             console.log('Signal received:', { from, type });
             callbacksRef.current.onSignal?.(from, type, data);
+        });
+
+        // Whiteboard toggle sync
+        socket.on('whiteboard:toggled', ({ isOpen, userId }: { isOpen: boolean; userId: string }) => {
+            console.log(`Whiteboard ${isOpen ? 'opened' : 'closed'} by ${userId}`);
+            callbacksRef.current.onWhiteboardToggled?.(isOpen, userId);
         });
 
         return () => {
@@ -287,6 +305,14 @@ export function useRoomSocket({
         [roomId]
     );
 
+    // Send whiteboard toggle
+    const sendWhiteboardToggle = useCallback(
+        (isOpen: boolean) => {
+            socketRef.current?.emit('whiteboard:toggle', { roomId, isOpen, userId: userRef.current.id });
+        },
+        [roomId]
+    );
+
     return {
         isConnected,
         participants,
@@ -299,5 +325,6 @@ export function useRoomSocket({
         sendRaiseHand,
         sendReaction,
         joinWithPassword,
+        sendWhiteboardToggle,
     };
 }

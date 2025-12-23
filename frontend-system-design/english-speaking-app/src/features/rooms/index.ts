@@ -10,6 +10,7 @@ export { FloatingReactions, useReactions } from './components/FloatingReactions'
 export { PasswordModal } from './components/PasswordModal';
 export { VideoPlayer } from './components/VideoPlayer';
 export { VideoGrid } from './components/VideoGrid';
+export { Whiteboard, type DrawingElement, type DrawingTool } from './components/Whiteboard';
 export {
     ConnectionStatus,
     RoomHeader,
@@ -22,6 +23,8 @@ export { useRooms, useRoom, useCreateRoom } from './hooks/useRooms';
 export { useRoomSocket } from './hooks/useRoomSocket';
 export { useWebRTC } from './hooks/useWebRTC';
 export { useRoomSession } from './hooks/useRoomSession';
+export { useWhiteboard } from './hooks/useWhiteboard';
 
 // Stores
 export { useMediaStore } from './stores/mediaStore';
+

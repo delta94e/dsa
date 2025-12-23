@@ -11,6 +11,10 @@ import {
     IconHandOff,
     IconHeart,
     IconThumbUp,
+    IconScreenShare,
+    IconScreenShareOff,
+    IconChalkboard,
+    IconChalkboardOff,
 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFlags } from '@/shared/components/ui/FeatureFlagMenu';
@@ -20,9 +24,13 @@ export type ReactionType = 'raise_hand' | 'clap' | 'thumbs_up' | 'heart';
 interface VoiceControlsProps {
     isMuted: boolean;
     isVideoEnabled: boolean;
+    isScreenSharing: boolean;
+    isWhiteboardOpen: boolean;
     isHandRaised: boolean;
     onToggleMute: () => void;
     onToggleVideo: () => void;
+    onToggleScreenShare: () => void;
+    onToggleWhiteboard: () => void;
     onToggleHand: () => void;
     onReaction: (type: ReactionType) => void;
     onLeave: () => void;
@@ -51,9 +59,13 @@ const buttonVariants = {
 export function VoiceControls({
     isMuted,
     isVideoEnabled,
+    isScreenSharing,
+    isWhiteboardOpen,
     isHandRaised,
     onToggleMute,
     onToggleVideo,
+    onToggleScreenShare,
+    onToggleWhiteboard,
     onToggleHand,
     onReaction,
     onLeave,
@@ -96,6 +108,46 @@ export function VoiceControls({
                         onClick={onToggleVideo}
                     >
                         {isVideoEnabled ? <IconVideo size={24} /> : <IconVideoOff size={24} />}
+                    </ActionIcon>
+                </motion.div>
+            </Tooltip>
+
+            {/* Screen Share Button */}
+            <Tooltip label={isScreenSharing ? 'Stop Sharing' : 'Share Screen'}>
+                <motion.div
+                    variants={pulseVariants}
+                    animate={isScreenSharing ? 'pulse' : 'idle'}
+                    whileTap="tap"
+                    whileHover="hover"
+                >
+                    <ActionIcon
+                        size="xl"
+                        radius="xl"
+                        variant={isScreenSharing ? 'filled' : 'light'}
+                        color={isScreenSharing ? 'green' : 'gray'}
+                        onClick={onToggleScreenShare}
+                    >
+                        {isScreenSharing ? <IconScreenShare size={24} /> : <IconScreenShareOff size={24} />}
+                    </ActionIcon>
+                </motion.div>
+            </Tooltip>
+
+            {/* Whiteboard Button */}
+            <Tooltip label={isWhiteboardOpen ? 'Close Whiteboard' : 'Open Whiteboard'}>
+                <motion.div
+                    variants={pulseVariants}
+                    animate={isWhiteboardOpen ? 'pulse' : 'idle'}
+                    whileTap="tap"
+                    whileHover="hover"
+                >
+                    <ActionIcon
+                        size="xl"
+                        radius="xl"
+                        variant={isWhiteboardOpen ? 'filled' : 'light'}
+                        color={isWhiteboardOpen ? 'violet' : 'gray'}
+                        onClick={onToggleWhiteboard}
+                    >
+                        {isWhiteboardOpen ? <IconChalkboard size={24} /> : <IconChalkboardOff size={24} />}
                     </ActionIcon>
                 </motion.div>
             </Tooltip>

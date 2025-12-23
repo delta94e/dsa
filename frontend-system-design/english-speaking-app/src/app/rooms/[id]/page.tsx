@@ -14,6 +14,7 @@ import {
     CurrentUserInfo,
     ParticipantsGrid,
     VideoGrid,
+    Whiteboard,
     useRoomSession,
 } from '@/features/rooms';
 import { LoadingState, ErrorState } from '@/shared/components/ui/DataStates';
@@ -32,11 +33,15 @@ function RoomContent({ roomId }: { roomId: string }) {
         currentUser,
         isMuted,
         isVideoEnabled,
+        isScreenSharing,
+        isWhiteboardOpen,
         vadActive,
         isHandRaised,
         localStream,
         handleToggleMute,
         handleToggleVideo,
+        handleToggleScreenShare,
+        handleToggleWhiteboard,
         handleLeave,
         handleToggleHand,
         sendReaction,
@@ -143,14 +148,37 @@ function RoomContent({ roomId }: { roomId: string }) {
                         <VoiceControls
                             isMuted={isMuted}
                             isVideoEnabled={isVideoEnabled}
+                            isScreenSharing={isScreenSharing}
+                            isWhiteboardOpen={isWhiteboardOpen}
                             isHandRaised={isHandRaised}
                             onToggleMute={handleToggleMute}
                             onToggleVideo={handleToggleVideo}
+                            onToggleScreenShare={handleToggleScreenShare}
+                            onToggleWhiteboard={handleToggleWhiteboard}
                             onToggleHand={handleToggleHand}
                             onReaction={sendReaction}
                             onLeave={handleLeave}
                         />
                     </Paper>
+
+                    {/* Whiteboard Panel */}
+                    <AnimatePresence>
+                        {isWhiteboardOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 20 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <Paper shadow="sm" radius="lg" mt="md" style={{ height: 500 }}>
+                                    <Whiteboard
+                                        roomId={roomId}
+                                        userId={currentUser.id}
+                                    />
+                                </Paper>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Floating Reactions */}
                     <FloatingReactions reactions={reactions} />

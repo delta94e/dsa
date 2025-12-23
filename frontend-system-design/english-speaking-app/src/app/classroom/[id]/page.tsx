@@ -91,8 +91,14 @@ function ClassroomContent({ classroomId }: { classroomId: string }) {
         <FloatingControlsWrapper>
           <VoiceControls
             isMuted={isMuted}
+            isVideoEnabled={false}
+            isScreenSharing={false}
+            isWhiteboardOpen={false}
             isHandRaised={isHandRaised}
             onToggleMute={handleMuteToggle}
+            onToggleVideo={() => {}}
+            onToggleScreenShare={() => {}}
+            onToggleWhiteboard={() => {}}
             onLeave={handleLeave}
             onToggleHand={handleRaiseHand}
             onReaction={handleReaction}

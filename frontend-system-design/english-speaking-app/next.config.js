@@ -129,6 +129,10 @@ const nextConfig = {
 
   // Webpack optimizations
   webpack: (config, { dev, isServer }) => {
+    // NOTE: Module Federation webpack plugin removed due to compatibility issues
+    // with Next.js 14 App Router. Using runtime script loading instead.
+    // See RemoteSvelte component for implementation.
+
     // Production optimizations
     if (!dev && !isServer) {
       config.optimization = {

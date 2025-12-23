@@ -18,6 +18,11 @@ import {
     VideoTogglePayload,
     RaiseHandPayload,
     ReactionPayload,
+    ScreenSharePayload,
+    WhiteboardJoinPayload,
+    WhiteboardDrawPayload,
+    WhiteboardClearPayload,
+    DrawingElement,
 } from '../types';
 
 @WebSocketGateway({
@@ -32,6 +37,9 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // Track which room each socket is in
     private socketRooms = new Map<string, string>();
+
+    // Track whiteboard open state per room
+    private whiteboardOpen = new Map<string, boolean>();
 
     constructor(private readonly roomsService: RoomsService) { }
 
@@ -89,6 +97,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.emit('joined', {
             roomId,
             participants: room.participants,
+            isWhiteboardOpen: this.whiteboardOpen.get(roomId) || false,
         });
 
         // Notify others in room
@@ -265,5 +274,116 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         });
 
         console.log(`User ${participant.name} ${isVideoEnabled ? 'enabled' : 'disabled'} video`);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SCREEN SHARE
+    // ═══════════════════════════════════════════════════════════════
+
+    @SubscribeMessage('screen_share_toggle')
+    handleScreenShareToggle(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() payload: ScreenSharePayload,
+    ) {
+        const { roomId, isSharing } = payload;
+        const participant = this.roomsService.getParticipantBySocketId(
+            roomId,
+            client.id,
+        );
+        if (!participant) return;
+
+        // Notify all in room
+        this.server.to(roomId).emit('participant_screen_share', {
+            userId: participant.id,
+            userName: participant.name,
+            isSharing,
+        });
+
+        console.log(`User ${participant.name} ${isSharing ? 'started' : 'stopped'} screen sharing`);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // WHITEBOARD
+    // ═══════════════════════════════════════════════════════════════
+
+    // Store whiteboard elements per room
+    private whiteboardData = new Map<string, DrawingElement[]>();
+
+    @SubscribeMessage('whiteboard:join')
+    handleWhiteboardJoin(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() payload: WhiteboardJoinPayload,
+    ) {
+        const { roomId, userId } = payload;
+        console.log(`User ${userId} joined whiteboard in room ${roomId}`);
+
+        // Join whiteboard-specific room
+        client.join(`whiteboard:${roomId}`);
+
+        // Send current whiteboard state to joining user
+        const elements = this.whiteboardData.get(roomId) || [];
+        client.emit('whiteboard:sync', elements);
+    }
+
+    @SubscribeMessage('whiteboard:leave')
+    handleWhiteboardLeave(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() payload: WhiteboardJoinPayload,
+    ) {
+        const { roomId, userId } = payload;
+        console.log(`User ${userId} left whiteboard in room ${roomId}`);
+
+        // Leave whiteboard-specific room
+        client.leave(`whiteboard:${roomId}`);
+    }
+
+    @SubscribeMessage('whiteboard:draw')
+    handleWhiteboardDraw(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() payload: WhiteboardDrawPayload,
+    ) {
+        const { roomId, element } = payload;
+
+        // Store element
+        if (!this.whiteboardData.has(roomId)) {
+            this.whiteboardData.set(roomId, []);
+        }
+        this.whiteboardData.get(roomId)!.push(element);
+
+        // Broadcast to all in whiteboard room except sender
+        client.to(`whiteboard:${roomId}`).emit('whiteboard:draw', element);
+    }
+
+    @SubscribeMessage('whiteboard:clear')
+    handleWhiteboardClear(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() payload: WhiteboardClearPayload,
+    ) {
+        const { roomId, userId } = payload;
+        console.log(`User ${userId} cleared whiteboard in room ${roomId}`);
+
+        // Clear stored elements
+        this.whiteboardData.set(roomId, []);
+
+        // Broadcast clear to all in whiteboard room
+        this.server.to(`whiteboard:${roomId}`).emit('whiteboard:clear');
+    }
+
+    @SubscribeMessage('whiteboard:toggle')
+    handleWhiteboardToggle(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() payload: { roomId: string; isOpen: boolean; userId: string },
+    ) {
+        const { roomId, isOpen, userId } = payload;
+        console.log(`User ${userId} ${isOpen ? 'opened' : 'closed'} whiteboard in room ${roomId}`);
+
+        // Store whiteboard open state
+        this.whiteboardOpen.set(roomId, isOpen);
+
+        // Broadcast to all in room (including sender for confirmation)
+        this.server.to(roomId).emit('whiteboard:toggled', {
+            isOpen,
+            userId,
+        });
     }
 }

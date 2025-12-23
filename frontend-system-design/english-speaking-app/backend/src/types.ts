@@ -169,6 +169,51 @@ export interface RaiseHandPayload {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// SCREEN SHARE
+// ═══════════════════════════════════════════════════════════════
+
+export interface ScreenSharePayload {
+    roomId: string;
+    isSharing: boolean;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WHITEBOARD
+// ═══════════════════════════════════════════════════════════════
+
+export type DrawingToolType = 'select' | 'pen' | 'eraser' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'text';
+
+export interface DrawingElement {
+    id: string;
+    type: DrawingToolType;
+    points?: { x: number; y: number }[];
+    startX?: number;
+    startY?: number;
+    endX?: number;
+    endY?: number;
+    color: string;
+    strokeWidth: number;
+    text?: string;
+    userId: string;
+    timestamp: number;
+}
+
+export interface WhiteboardJoinPayload {
+    roomId: string;
+    userId: string;
+}
+
+export interface WhiteboardDrawPayload {
+    roomId: string;
+    element: DrawingElement;
+}
+
+export interface WhiteboardClearPayload {
+    roomId: string;
+    userId: string;
+}
+
+// ═══════════════════════════════════════════════════════════════
 // TEACHER-STUDENT CLASSROOM SYSTEM
 // ═══════════════════════════════════════════════════════════════
 
