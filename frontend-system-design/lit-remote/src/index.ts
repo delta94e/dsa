@@ -6,6 +6,12 @@
  * and Go backend for code execution.
  */
 
+// Import Vaadin Lumo theme (MUST be first!)
+import '@vaadin/vaadin-lumo-styles/all-imports.js';
+
+// Apply dark theme to document
+document.documentElement.setAttribute('theme', 'dark');
+
 // Register all components
 import './components/app/lc-app.js';
 import './components/problem-list/lc-problem-list.js';
@@ -23,3 +29,4 @@ export * from './types/index.js';
 export * from './services/index.js';
 
 console.log('🧩 LeetCode Clone loaded!');
+

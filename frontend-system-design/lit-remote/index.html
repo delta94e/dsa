@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" theme="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -10,6 +10,175 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        /* Lumo Dark Theme Overrides */
+        html[theme~="dark"] {
+            --lumo-base-color: #1a1a2e;
+            --lumo-body-text-color: rgba(255, 255, 255, 0.9);
+            --lumo-header-text-color: rgba(255, 255, 255, 0.95);
+            --lumo-secondary-text-color: rgba(255, 255, 255, 0.7);
+            --lumo-tertiary-text-color: rgba(255, 255, 255, 0.5);
+            --lumo-disabled-text-color: rgba(255, 255, 255, 0.3);
+
+            --lumo-primary-color: #ffa116;
+            --lumo-primary-text-color: #ffa116;
+            --lumo-primary-color-50pct: rgba(255, 161, 22, 0.5);
+            --lumo-primary-color-10pct: rgba(255, 161, 22, 0.1);
+
+            --lumo-error-color: #ff375f;
+            --lumo-success-color: #00b8a3;
+            --lumo-warning-color: #ffc01e;
+
+            --lumo-contrast-5pct: rgba(255, 255, 255, 0.05);
+            --lumo-contrast-10pct: rgba(255, 255, 255, 0.1);
+            --lumo-contrast-20pct: rgba(255, 255, 255, 0.2);
+            --lumo-contrast-30pct: rgba(255, 255, 255, 0.3);
+            --lumo-contrast-40pct: rgba(255, 255, 255, 0.4);
+            --lumo-contrast-50pct: rgba(255, 255, 255, 0.5);
+            --lumo-contrast-60pct: rgba(255, 255, 255, 0.6);
+            --lumo-contrast-70pct: rgba(255, 255, 255, 0.7);
+            --lumo-contrast-80pct: rgba(255, 255, 255, 0.8);
+            --lumo-contrast-90pct: rgba(255, 255, 255, 0.9);
+            --lumo-contrast: white;
+
+            --lumo-shade-5pct: rgba(0, 0, 0, 0.05);
+            --lumo-shade-10pct: rgba(0, 0, 0, 0.1);
+            --lumo-shade-20pct: rgba(0, 0, 0, 0.2);
+            --lumo-shade-30pct: rgba(0, 0, 0, 0.3);
+            --lumo-shade-40pct: rgba(0, 0, 0, 0.4);
+            --lumo-shade-50pct: rgba(0, 0, 0, 0.5);
+            --lumo-shade: #16213e;
+
+            background-color: var(--lumo-base-color);
+            color: var(--lumo-body-text-color);
+        }
+
+        body {
+            font-family: var(--lumo-font-family);
+            background: #1a1a2e;
+            min-height: 100vh;
+        }
+
+        /* Fix Vaadin Grid dark theme */
+        vaadin-grid {
+            --lumo-base-color: #1a1a2e !important;
+            --lumo-contrast-5pct: rgba(255, 255, 255, 0.05) !important;
+            --lumo-contrast-10pct: rgba(255, 255, 255, 0.1) !important;
+            background: transparent !important;
+        }
+
+        vaadin-grid::part(cell) {
+            background: rgba(255, 255, 255, 0.02) !important;
+            color: white !important;
+        }
+
+        vaadin-grid::part(body-cell) {
+            background: transparent !important;
+            color: white !important;
+        }
+
+        vaadin-grid::part(row) {
+            background: rgba(255, 255, 255, 0.03) !important;
+        }
+
+        vaadin-grid::part(row):nth-child(even) {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        vaadin-grid::part(header-cell) {
+            background: rgba(0, 0, 0, 0.4) !important;
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        vaadin-grid::part(row):hover {
+            background: rgba(255, 161, 22, 0.15) !important;
+        }
+
+        /* Force all vaadin-grid internals to dark */
+        vaadin-grid-cell-content {
+            color: white !important;
+        }
+
+        /* Fix Vaadin Tabs dark theme */
+        vaadin-tabs {
+            --lumo-contrast-10pct: transparent;
+        }
+
+        vaadin-tab {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        vaadin-tab[selected] {
+            color: #ffa116;
+        }
+
+        /* Fix Vaadin Select dark theme */
+        vaadin-select::part(input-field) {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        vaadin-select-overlay {
+            --lumo-base-color: #1a1a2e;
+        }
+
+        /* Fix Vaadin Text Field dark theme */
+        vaadin-text-field::part(input-field) {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        vaadin-text-field::part(value) {
+            color: white;
+        }
+
+        /* Fix Vaadin Button dark theme */
+        vaadin-button {
+            --lumo-contrast-5pct: rgba(255, 255, 255, 0.1);
+        }
+
+        vaadin-button[theme~="primary"] {
+            --lumo-primary-color: #ffa116;
+        }
+
+        /* FIX: Vaadin Select Overlay (dropdown menu appended to body) */
+        vaadin-select-overlay,
+        vaadin-select-overlay::part(overlay),
+        vaadin-select-overlay::part(content) {
+            background: #1a1a2e !important;
+            background-color: #1a1a2e !important;
+            --lumo-base-color: #1a1a2e !important;
+        }
+
+        vaadin-select-overlay vaadin-item {
+            color: white !important;
+            background: transparent !important;
+        }
+
+        vaadin-select-overlay vaadin-item:hover,
+        vaadin-select-overlay vaadin-item[focused] {
+            background: rgba(255, 161, 22, 0.15) !important;
+        }
+
+        vaadin-select-overlay vaadin-item[selected] {
+            background: rgba(255, 161, 22, 0.25) !important;
+            color: #ffa116 !important;
+        }
+
+        /* FIX: Text Field input visibility */
+        vaadin-text-field input,
+        vaadin-text-field [part="value"],
+        vaadin-text-field::part(value) {
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+        }
+
+        vaadin-text-field::placeholder,
+        vaadin-text-field input::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+            -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important;
         }
     </style>
 </head>

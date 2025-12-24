@@ -1,12 +1,24 @@
-import { LitElement, html } from 'lit';
+/**
+ * Problem List Component - Vaadin Version
+ * Uses vaadin-grid for virtualized list, vaadin-text-field for search
+ */
+
+import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { problemListStyles } from './lc-problem-list.styles';
 import { ApiService } from '../../services/api.service';
 import type { Problem, Topic, Category } from '../../types/problem.types';
 
-/**
- * Category tab configuration
- */
+// Vaadin imports
+import '@vaadin/grid';
+import '@vaadin/grid/vaadin-grid-column.js';
+import '@vaadin/text-field';
+import '@vaadin/tabs';
+import '@vaadin/select';
+import '@vaadin/button';
+import '@vaadin/progress-bar';
+import type { Grid, GridEventContext } from '@vaadin/grid';
+import type { SelectChangeEvent } from '@vaadin/select';
+
 interface CategoryTab {
   id: Category | 'all';
   name: string;
@@ -22,114 +34,341 @@ const CATEGORIES: CategoryTab[] = [
   { id: 'javascript', name: 'JavaScript', icon: '📜' },
 ];
 
-const ROW_HEIGHT = 48;
-const VISIBLE_ROWS = 13;
-
-/**
- * Problem List component with virtualized scrolling
- */
 @customElement('lc-problem-list')
 export class LcProblemList extends LitElement {
-  static override styles = problemListStyles;
+  static styles = css`
+        :host {
+            display: block;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Topic Tags */
+        .topic-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .topic-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .topic-tag:hover {
+            background: rgba(255, 161, 22, 0.15);
+            border-color: rgba(255, 161, 22, 0.4);
+        }
+
+        .topic-tag.active {
+            background: rgba(255, 161, 22, 0.2);
+            border-color: #ffa116;
+            color: #ffa116;
+        }
+
+        .topic-tag .count {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        /* Category Tabs */
+        .category-tabs {
+            --lumo-contrast-10pct: rgba(255, 255, 255, 0.1);
+        }
+
+        vaadin-tab {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        vaadin-tab[selected] {
+            color: #ffa116;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-field {
+            flex: 1;
+            min-width: 200px;
+            --lumo-contrast-10pct: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-field::part(input-field) {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .sort-select {
+            min-width: 150px;
+            --lumo-contrast-10pct: rgba(255, 255, 255, 0.1);
+        }
+
+        .stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Grid Styling */
+        vaadin-grid {
+            --lumo-base-color: transparent;
+            --lumo-body-text-color: white;
+            --lumo-secondary-text-color: rgba(255, 255, 255, 0.8);
+            --lumo-contrast-10pct: rgba(255, 255, 255, 0.1);
+            --lumo-contrast-5pct: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 600px;
+            color: white;
+        }
+
+        vaadin-grid::part(cell) {
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        vaadin-grid::part(body-cell) {
+            color: white;
+        }
+
+        vaadin-grid::part(header-cell) {
+            background: rgba(0, 0, 0, 0.4);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        vaadin-grid::part(row):hover {
+            background: rgba(255, 161, 22, 0.15);
+        }
+
+        /* Status icons */
+        .status-solved { color: #00b8a3; }
+        .status-attempted { color: #ffc01e; }
+        .status-todo { color: rgba(255, 255, 255, 0.3); }
+
+        /* Difficulty badges */
+        .difficulty {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .difficulty.easy { background: rgba(0, 184, 163, 0.2); color: #00b8a3; }
+        .difficulty.medium { background: rgba(255, 192, 30, 0.2); color: #ffc01e; }
+        .difficulty.hard { background: rgba(255, 55, 95, 0.2); color: #ff375f; }
+
+        .premium-icon { color: #ffa116; }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 0;
+        }
+
+        vaadin-button[theme~="icon"] {
+            --lumo-contrast-10pct: rgba(255, 255, 255, 0.1);
+        }
+
+        .page-info {
+            padding: 0 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* Empty state */
+        .empty {
+            text-align: center;
+            padding: 48px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+    `;
 
   @state() private problems: Problem[] = [];
   @state() private topics: Topic[] = [];
   @state() private loading = true;
   @state() private searchQuery = '';
   @state() private selectedCategory: Category | 'all' = 'all';
+  @state() private selectedCategoryIndex = 0;
   @state() private selectedTopic = '';
-  @state() private listScrollTop = 0;
   @state() private currentPage = 1;
   @state() private totalProblems = 0;
   @state() private itemsPerPage = 50;
-  @state() private showSortDropdown = false;
   @state() private selectedSort = 'custom';
 
-  private isFetching = false;
-  private abortController: AbortController | null = null;
-
   private sortOptions = [
-    { value: 'custom', label: 'Custom', premium: false },
-    { value: 'frequency', label: 'Frequency', premium: true },
-    { value: 'contest', label: 'Contest Point', premium: true },
-    { value: 'difficulty', label: 'Difficulty', premium: false },
-    { value: 'acceptance', label: 'Acceptance', premium: false },
-    { value: 'id', label: 'Question ID', premium: false },
-    { value: 'submitted', label: 'Last Submitted Time', premium: false },
+    { label: 'Custom', value: 'custom' },
+    { label: 'Difficulty', value: 'difficulty' },
+    { label: 'Acceptance', value: 'acceptance' },
+    { label: 'Question ID', value: 'id' },
   ];
-
-  @state() private showFilterPanel = false;
-  @state() private filterMatch: 'all' | 'any' = 'all';
-  @state() private filters: { type: string; operator: string; value: string }[] = [
-    { type: 'status', operator: 'is', value: '' },
-    { type: 'difficulty', operator: 'is', value: '' },
-  ];
-  @state() private topicSearch = '';
-  @state() private selectedFilterTopics: string[] = [];
-  @state() private showTopicsPanel = false;
-
-  private filterTypes = [
-    { value: 'status', label: 'Status', icon: '☑' },
-    { value: 'difficulty', label: 'Difficulty', icon: '◎' },
-    { value: 'topics', label: 'Topics', icon: '◇' },
-    { value: 'language', label: 'Language', icon: '</>' },
-  ];
-
-  private filterValues: Record<string, { value: string; label: string }[]> = {
-    status: [
-      { value: 'todo', label: 'Todo' },
-      { value: 'attempted', label: 'Attempted' },
-      { value: 'solved', label: 'Solved' },
-    ],
-    difficulty: [
-      { value: 'Easy', label: 'Easy' },
-      { value: 'Medium', label: 'Medium' },
-      { value: 'Hard', label: 'Hard' },
-    ],
-    topics: [], // Populated from API
-    language: [
-      { value: 'javascript', label: 'JavaScript' },
-      { value: 'typescript', label: 'TypeScript' },
-      { value: 'python', label: 'Python' },
-      { value: 'python3', label: 'Python3' },
-      { value: 'java', label: 'Java' },
-      { value: 'cpp', label: 'C++' },
-      { value: 'c', label: 'C' },
-      { value: 'csharp', label: 'C#' },
-      { value: 'go', label: 'Go' },
-      { value: 'rust', label: 'Rust' },
-      { value: 'kotlin', label: 'Kotlin' },
-      { value: 'swift', label: 'Swift' },
-      { value: 'ruby', label: 'Ruby' },
-      { value: 'scala', label: 'Scala' },
-      { value: 'php', label: 'PHP' },
-      { value: 'dart', label: 'Dart' },
-      { value: 'racket', label: 'Racket' },
-      { value: 'erlang', label: 'Erlang' },
-      { value: 'elixir', label: 'Elixir' },
-      { value: 'mysql', label: 'MySQL' },
-      { value: 'mssql', label: 'MS SQL Server' },
-      { value: 'oracle', label: 'Oracle' },
-      { value: 'pandas', label: 'Pandas' },
-      { value: 'postgresql', label: 'PostgreSQL' },
-    ],
-  };
 
   override async connectedCallback() {
     super.connectedCallback();
     await Promise.all([this.fetchProblems(), this.fetchTopics()]);
   }
 
-  private async fetchProblems() {
-    // Prevent duplicate requests
-    if (this.isFetching) {
-      this.abortController?.abort();
+  override updated() {
+    this._injectAllDarkStyles();
+  }
+
+  private _injectAllDarkStyles() {
+    // Inject into Grid
+    const grid = this.renderRoot.querySelector('vaadin-grid');
+    if (grid?.shadowRoot && !grid.shadowRoot.querySelector('#dark-theme-styles')) {
+      const style = document.createElement('style');
+      style.id = 'dark-theme-styles';
+      style.textContent = `
+        :host {
+          background: transparent !important;
+          --lumo-base-color: transparent !important;
+        }
+        [part~="cell"] {
+          background: transparent !important;
+          color: white !important;
+        }
+        [part~="header-cell"] {
+          background: rgba(0, 0, 0, 0.4) !important;
+          color: rgba(255, 255, 255, 0.7) !important;
+          text-transform: uppercase !important;
+          font-size: 11px !important;
+          letter-spacing: 0.5px !important;
+        }
+        [part~="row"] {
+          background: transparent !important;
+        }
+        [part~="row"]:hover {
+          background: rgba(255, 161, 22, 0.12) !important;
+        }
+      `;
+      grid.shadowRoot.appendChild(style);
     }
 
-    this.isFetching = true;
-    this.loading = true;
-    this.abortController = new AbortController();
+    // Inject into Select
+    const selects = this.renderRoot.querySelectorAll('vaadin-select');
+    selects.forEach(select => {
+      if (select?.shadowRoot && !select.shadowRoot.querySelector('#dark-theme-styles')) {
+        const style = document.createElement('style');
+        style.id = 'dark-theme-styles';
+        style.textContent = `
+          :host {
+            --lumo-base-color: #1a1a2e !important;
+            --lumo-contrast-10pct: rgba(255, 255, 255, 0.1) !important;
+          }
+          [part~="input-field"] {
+            background: rgba(0, 0, 0, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 6px !important;
+            color: white !important;
+          }
+          [part~="value"] {
+            color: white !important;
+          }
+          [part~="toggle-button"] {
+            color: rgba(255, 255, 255, 0.7) !important;
+          }
+        `;
+        select.shadowRoot.appendChild(style);
+      }
+    });
 
+    // Inject into TextField
+    const textFields = this.renderRoot.querySelectorAll('vaadin-text-field');
+    textFields.forEach(field => {
+      if (field?.shadowRoot && !field.shadowRoot.querySelector('#dark-theme-styles')) {
+        const style = document.createElement('style');
+        style.id = 'dark-theme-styles';
+        style.textContent = `
+          :host {
+            --lumo-contrast-10pct: rgba(255, 255, 255, 0.1) !important;
+          }
+          [part~="input-field"] {
+            background: rgba(0, 0, 0, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 6px !important;
+          }
+          [part~="value"], input {
+            color: white !important;
+          }
+          ::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+          }
+        `;
+        field.shadowRoot.appendChild(style);
+      }
+    });
+
+    // Inject into Tabs
+    const tabs = this.renderRoot.querySelectorAll('vaadin-tabs');
+    tabs.forEach(tabGroup => {
+      if (tabGroup?.shadowRoot && !tabGroup.shadowRoot.querySelector('#dark-theme-styles')) {
+        const style = document.createElement('style');
+        style.id = 'dark-theme-styles';
+        style.textContent = `
+          :host {
+            --lumo-contrast-10pct: transparent !important;
+            --lumo-primary-color: #ffa116 !important;
+          }
+          [part~="tabs"] {
+            background: transparent !important;
+          }
+        `;
+        tabGroup.shadowRoot.appendChild(style);
+      }
+    });
+
+    // Inject into individual Tab items
+    const tabItems = this.renderRoot.querySelectorAll('vaadin-tab');
+    tabItems.forEach(tab => {
+      if (tab?.shadowRoot && !tab.shadowRoot.querySelector('#dark-theme-styles')) {
+        const style = document.createElement('style');
+        style.id = 'dark-theme-styles';
+        style.textContent = `
+          :host {
+            color: rgba(255, 255, 255, 0.7) !important;
+            background: transparent !important;
+          }
+          :host([selected]) {
+            color: #ffa116 !important;
+            background: transparent !important;
+          }
+          :host(:hover) {
+            color: white !important;
+          }
+        `;
+        tab.shadowRoot.appendChild(style);
+      }
+    });
+  }
+
+  private async fetchProblems() {
+    this.loading = true;
     try {
       const result = await ApiService.getProblems({
         page: this.currentPage,
@@ -141,437 +380,241 @@ export class LcProblemList extends LitElement {
       this.problems = result.problems;
       this.totalProblems = result.total;
     } catch (error) {
-      if ((error as Error).name !== 'AbortError') {
-        console.error('Failed to fetch problems:', error);
-      }
+      console.error('Failed to fetch problems:', error);
     } finally {
       this.loading = false;
-      this.isFetching = false;
     }
   }
 
   private async fetchTopics() {
     try {
-      const result = await ApiService.getTopics();
-      this.topics = result.topics;
-      // Populate filter values with topics from API
-      this.filterValues = {
-        ...this.filterValues,
-        topics: result.topics.map((t) => ({ value: t.slug, label: t.name })),
-      };
+      const response = await ApiService.getTopics();
+      this.topics = response.topics || [];
     } catch (error) {
       console.error('Failed to fetch topics:', error);
     }
   }
 
-  private handleSearch(e: Event) {
+  private handleSearch = (e: Event) => {
     const input = e.target as HTMLInputElement;
     this.searchQuery = input.value;
     this.currentPage = 1;
     this.fetchProblems();
-  }
+  };
 
-  private handleCategoryClick(categoryId: Category | 'all') {
-    // Prevent clicking same category or while loading
-    if (this.selectedCategory === categoryId || this.loading) return;
-    this.selectedCategory = categoryId;
+  private handleCategoryChange = (e: CustomEvent) => {
+    this.selectedCategoryIndex = e.detail.value;
+    this.selectedCategory = CATEGORIES[this.selectedCategoryIndex].id;
     this.currentPage = 1;
     this.fetchProblems();
-  }
+  };
 
-  private handleTopicClick(slug: string) {
-    // Prevent clicking while loading
-    if (this.loading) return;
+  private handleTopicClick = (slug: string) => {
     this.selectedTopic = this.selectedTopic === slug ? '' : slug;
     this.currentPage = 1;
     this.fetchProblems();
-  }
+  };
 
-  private toggleSortDropdown() {
-    this.showSortDropdown = !this.showSortDropdown;
-  }
-
-  private getSortLabel(): string {
-    const option = this.sortOptions.find((o) => o.value === this.selectedSort);
-    return option?.label || 'Custom';
-  }
-
-  private handleSortChange(value: string, isPremium: boolean) {
-    if (isPremium) return; // Premium options not available
-    this.selectedSort = value;
-    this.showSortDropdown = false;
-    // TODO: Implement sorting logic
-  }
-
-  private toggleFilterPanel() {
-    this.showFilterPanel = !this.showFilterPanel;
-    this.showSortDropdown = false;
-  }
-
-  private addFilter() {
-    this.filters = [...this.filters, { type: 'topics', operator: 'is', value: '' }];
-  }
-
-  private removeFilter(index: number) {
-    this.filters = this.filters.filter((_, i) => i !== index);
-  }
-
-  private updateFilter(index: number, field: 'type' | 'operator' | 'value', value: string) {
-    this.filters = this.filters.map((f, i) =>
-      i === index ? { ...f, [field]: value } : f
-    );
-  }
-
-  private resetFilters() {
-    this.filters = [
-      { type: 'status', operator: 'is', value: '' },
-      { type: 'difficulty', operator: 'is', value: '' },
-    ];
-    this.filterMatch = 'all';
-    this.selectedFilterTopics = [];
-    this.showTopicsPanel = false;
-  }
-
-  private toggleTopicsPanel(_index: number) {
-    this.showTopicsPanel = !this.showTopicsPanel;
-  }
-
-  private getFilteredTopics(): { value: string; label: string }[] {
-    const topics = this.filterValues['topics'] || [];
-    if (!this.topicSearch) return topics;
-    const search = this.topicSearch.toLowerCase();
-    return topics.filter((t) => t.label.toLowerCase().includes(search));
-  }
-
-  private toggleTopicSelection(value: string) {
-    if (this.selectedFilterTopics.includes(value)) {
-      this.selectedFilterTopics = this.selectedFilterTopics.filter((t) => t !== value);
-    } else {
-      this.selectedFilterTopics = [...this.selectedFilterTopics, value];
-    }
-  }
-
-  private resetTopicSelection() {
-    this.selectedFilterTopics = [];
-    this.topicSearch = '';
-  }
-
-  private handleScroll(e: Event) {
-    const container = e.target as HTMLElement;
-    this.listScrollTop = container.scrollTop;
-  }
-
-  private handleProblemClick(problem: Problem) {
-    this.dispatchEvent(
-      new CustomEvent('problem-select', {
-        detail: problem,
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-
-  private handlePageChange(page: number) {
-    this.currentPage = page;
-    this.listScrollTop = 0;
+  private handleSortChange = (e: SelectChangeEvent) => {
+    this.selectedSort = e.target.value;
     this.fetchProblems();
-  }
+  };
 
-  private renderLoading() {
-    return html`
-      <div class="skeleton-list">
-        ${[1, 2, 3, 4, 5, 6, 7, 8].map(
-      () => html`<div class="skeleton-bar"></div>`
-    )}
-      </div>
-    `;
-  }
+  private handleProblemClick = (problem: Problem) => {
+    this.dispatchEvent(new CustomEvent('problem-select', {
+      detail: problem,
+      bubbles: true,
+      composed: true
+    }));
+  };
 
-  private renderTableHeader() {
-    return html`
-      <div class="table-header">
-        <span class="header-status">Status</span>
-        <span class="header-title">Title</span>
-        <span class="header-acceptance">Acceptance</span>
-        <span class="header-difficulty">Difficulty</span>
-        <span class="header-icons"></span>
-      </div>
-    `;
-  }
-
-  private renderVirtualizedList() {
-    const startIndex = Math.floor(this.listScrollTop / ROW_HEIGHT);
-    const endIndex = Math.min(startIndex + VISIBLE_ROWS + 2, this.problems.length);
-    const totalHeight = this.problems.length * ROW_HEIGHT;
-    const offsetY = startIndex * ROW_HEIGHT;
-    const visibleItems = this.problems.slice(startIndex, endIndex);
-
-    return html`
-      <div class="virtual-container" @scroll=${this.handleScroll}>
-        <div class="virtual-content" style="height: ${totalHeight}px;">
-          ${visibleItems.map(
-      (problem, index) => html`
-              <div
-                class="problem-row ${startIndex + index === 0 ? 'featured' : ''}"
-                style="top: ${offsetY + index * ROW_HEIGHT}px; height: ${ROW_HEIGHT}px;"
-                @click=${() => this.handleProblemClick(problem)}
-              >
-                <span class="status-icon ${this.getStatusClass(problem)}"
-                  >${this.getStatusIcon(problem)}</span
-                >
-                <span class="problem-title">
-                  ${startIndex + index === 0 ? html`<span class="featured-icon">📅</span>` : ''}
-                  ${problem.title}
-                </span>
-                <span class="acceptance">${problem.acceptanceRate?.toFixed(1) || '0.0'}%</span>
-                <span class="difficulty ${problem.difficulty.toLowerCase()}"
-                  >${this.getDifficultyShort(problem.difficulty)}</span
-                >
-                <span class="icons">
-                  ${problem.isPremium ? html`<span title="Premium">🔒</span>` : ''}
-                </span>
-              </div>
-            `
-    )}
-        </div>
-      </div>
-    `;
-  }
+  private handlePageChange = (page: number) => {
+    const totalPages = Math.ceil(this.totalProblems / this.itemsPerPage);
+    if (page >= 1 && page <= totalPages) {
+      this.currentPage = page;
+      this.fetchProblems();
+    }
+  };
 
   private getStatusClass(problem: Problem): string {
     const id = problem.id || 0;
-    if (id % 5 === 0) return 'solved';
-    if (id % 3 === 0) return 'attempted';
-    return '';
+    if (id % 5 === 0) return 'status-solved';
+    if (id % 3 === 0) return 'status-attempted';
+    return 'status-todo';
   }
 
   private getStatusIcon(problem: Problem): string {
     const id = problem.id || 0;
     if (id % 5 === 0) return '✓';
     if (id % 3 === 0) return '◐';
-    return '';
-  }
-
-  private getDifficultyShort(difficulty: string): string {
-    const map: Record<string, string> = {
-      Easy: 'Easy',
-      Medium: 'Med.',
-      Hard: 'Hard',
-    };
-    return map[difficulty] || difficulty;
+    return '○';
   }
 
   private getSolvedCount(): number {
-    return this.problems.filter((_, i) => (i + 1) % 5 === 0).length;
+    return this.problems.filter(p => (p.id || 0) % 5 === 0).length;
   }
 
-  private renderPagination() {
-    const totalPages = Math.ceil(this.totalProblems / this.itemsPerPage);
-    if (totalPages <= 1) return '';
+  private statusRenderer = (root: HTMLElement, _: HTMLElement, model: GridEventContext<Problem>) => {
+    const problem = model.item;
+    if (!problem) return;
+    const statusClass = this.getStatusClass(problem);
+    const statusIcon = this.getStatusIcon(problem);
+    const colors: Record<string, string> = {
+      'status-solved': '#00b8a3',
+      'status-attempted': '#ffc01e',
+      'status-todo': 'rgba(255,255,255,0.4)'
+    };
+    root.innerHTML = `<span style="color: ${colors[statusClass] || 'white'}; font-size: 16px;">${statusIcon}</span>`;
+  };
 
-    const pages = [];
-    for (let i = 1; i <= Math.min(totalPages, 5); i++) {
-      pages.push(i);
+  private titleRenderer = (root: HTMLElement, _: HTMLElement, model: GridEventContext<Problem>) => {
+    const problem = model.item;
+    if (!problem) return;
+    root.innerHTML = `<span style="color: white; cursor: pointer;">${problem.title}</span>`;
+  };
+
+  private acceptanceRenderer = (root: HTMLElement, _: HTMLElement, model: GridEventContext<Problem>) => {
+    const problem = model.item;
+    if (!problem) return;
+    root.innerHTML = `<span style="color: rgba(255,255,255,0.8);">${problem.acceptanceRate?.toFixed(1) || '0.0'}%</span>`;
+  };
+
+  private difficultyRenderer = (root: HTMLElement, _: HTMLElement, model: GridEventContext<Problem>) => {
+    const problem = model.item;
+    if (!problem) return;
+    const diff = problem.difficulty.toLowerCase();
+    const colors: Record<string, string> = {
+      easy: '#00b8a3',
+      medium: '#ffc01e',
+      hard: '#ff375f'
+    };
+    const bgColors: Record<string, string> = {
+      easy: 'rgba(0,184,163,0.2)',
+      medium: 'rgba(255,192,30,0.2)',
+      hard: 'rgba(255,55,95,0.2)'
+    };
+    root.innerHTML = `<span style="color: ${colors[diff]}; background: ${bgColors[diff]}; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;">${problem.difficulty}</span>`;
+  };
+
+  private handleGridClick = (e: Event) => {
+    const grid = e.target as Grid<Problem>;
+    const eventContext = grid.getEventContext(e);
+    if (eventContext.item) {
+      this.handleProblemClick(eventContext.item);
     }
-
-    return html`
-      <div class="pagination">
-        <button
-          class="page-btn"
-          ?disabled=${this.currentPage === 1}
-          @click=${() => this.handlePageChange(this.currentPage - 1)}
-        >
-          ‹
-        </button>
-        ${pages.map(
-      (page) => html`
-            <button
-              class="page-btn ${page === this.currentPage ? 'active' : ''}"
-              @click=${() => this.handlePageChange(page)}
-            >
-              ${page}
-            </button>
-          `
-    )}
-        ${totalPages > 5 ? html`<span class="page-info">...</span>` : ''}
-        <button
-          class="page-btn"
-          ?disabled=${this.currentPage === totalPages}
-          @click=${() => this.handlePageChange(this.currentPage + 1)}
-        >
-          ›
-        </button>
-      </div>
-    `;
-  }
+  };
 
   override render() {
+    const totalPages = Math.ceil(this.totalProblems / this.itemsPerPage);
+
     return html`
-      <div class="container">
-        <!-- Topic Tags from API -->
-        <div class="topic-tags">
-          ${this.topics.slice(0, 8).map(
-      (topic) => html`
-              <span
-                class="topic-tag ${this.selectedTopic === topic.slug ? 'active' : ''}"
-                @click=${() => this.handleTopicClick(topic.slug)}
-              >
-                ${topic.name}
-                <span class="count">${topic.count || 0}</span>
-              </span>
-            `
-    )}
-          ${this.topics.length > 8 ? html`<span class="expand-btn">Expand ▾</span>` : ''}
-        </div>
-
-        <!-- Category Tabs -->
-        <div class="category-tabs">
-          ${CATEGORIES.map(
-      (cat) => html`
-              <button
-                class="category-tab ${this.selectedCategory === cat.id ? 'active' : ''}"
-                @click=${() => this.handleCategoryClick(cat.id)}
-              >
-                <span class="icon">${cat.icon}</span>
-                ${cat.name}
-              </button>
-            `
-    )}
-        </div>
-
-        <!-- Controls -->
-        <div class="controls">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="Search questions"
-              .value=${this.searchQuery}
-              @input=${this.handleSearch}
-            />
-          </div>
-          <div class="sort-dropdown">
-            <button class="sort-btn" @click=${this.toggleSortDropdown}>
-              ↕ ${this.getSortLabel()}
-            </button>
-            ${this.showSortDropdown
-        ? html`
-                  <div class="sort-menu">
-                    ${this.sortOptions.map(
-          (opt) => html`
-                        <div
-                          class="sort-option ${this.selectedSort === opt.value ? 'active' : ''} ${opt.premium ? 'premium' : ''}"
-                          @click=${() => this.handleSortChange(opt.value, opt.premium)}
+            <div class="container">
+                <!-- Topic Tags -->
+                <div class="topic-tags">
+                    ${this.topics.slice(0, 8).map(topic => html`
+                        <span 
+                            class="topic-tag ${this.selectedTopic === topic.slug ? 'active' : ''}"
+                            @click=${() => this.handleTopicClick(topic.slug)}
                         >
-                          <span>${opt.label}</span>
-                          ${this.selectedSort === opt.value ? html`<span class="check">✓</span>` : ''}
-                          ${opt.premium ? html`<span class="lock">🔒</span>` : ''}
-                        </div>
-                      `
-        )}
-                  </div>
-                `
-        : ''}
-          </div>
-          <div class="filter-dropdown">
-            <button class="control-btn ${this.showFilterPanel ? 'active' : ''}" title="Filter" @click=${this.toggleFilterPanel}>▽</button>
-            ${this.showFilterPanel
-        ? html`
-                  <div class="filter-panel">
-                    <div class="filter-header">
-                      <span>Match</span>
-                      <select class="filter-select small" .value=${this.filterMatch} @change=${(e: Event) => (this.filterMatch = (e.target as HTMLSelectElement).value as 'all' | 'any')}>
-                        <option value="all">All</option>
-                        <option value="any">Any</option>
-                      </select>
-                      <span>of the following filters:</span>
-                    </div>
-                    <div class="filter-rows">
-                      ${this.filters.map(
-          (filter, index) => html`
-                          <div class="filter-row">
-                            <span class="filter-icon">${this.filterTypes.find((t) => t.value === filter.type)?.icon || '◇'}</span>
-                            <select class="filter-select" .value=${filter.type} @change=${(e: Event) => this.updateFilter(index, 'type', (e.target as HTMLSelectElement).value)}>
-                              ${this.filterTypes.map((t) => html`<option value=${t.value}>${t.label}</option>`)}
-                            </select>
-                            <select class="filter-select small">
-                              <option value="is">is</option>
-                              <option value="is_not">is not</option>
-                            </select>
-                            ${filter.type === 'topics'
-              ? html`
-                                  <button class="topics-trigger" @click=${() => this.toggleTopicsPanel(index)}>
-                                    ${this.selectedFilterTopics.length > 0
-                  ? `${this.selectedFilterTopics.length} selected`
-                  : 'Select topics...'}
-                                  </button>
-                                `
-              : html`
-                                  <select class="filter-select" .value=${filter.value} @change=${(e: Event) => this.updateFilter(index, 'value', (e.target as HTMLSelectElement).value)}>
-                                    <option value="">Select...</option>
-                                    ${(this.filterValues[filter.type] || []).map((v) => html`<option value=${v.value}>${v.label}</option>`)}
-                                  </select>
-                                `}
-                            <button class="remove-btn" @click=${() => this.removeFilter(index)}>−</button>
-                          </div>
-                          ${filter.type === 'topics' && this.showTopicsPanel
-              ? html`
-                                <div class="topics-panel">
-                                  <div class="topics-search">
-                                    <span>🔍</span>
-                                    <input
-                                      type="text"
-                                      placeholder="search"
-                                      .value=${this.topicSearch}
-                                      @input=${(e: Event) => (this.topicSearch = (e.target as HTMLInputElement).value)}
-                                    />
-                                  </div>
-                                  <div class="topics-chips">
-                                    ${this.getFilteredTopics().map(
-                (t) => html`
-                                        <button
-                                          class="topic-chip ${this.selectedFilterTopics.includes(t.value) ? 'selected' : ''}"
-                                          @click=${() => this.toggleTopicSelection(t.value)}
-                                        >
-                                          ${t.label}
-                                        </button>
-                                      `
-              )}
-                                  </div>
-                                  <div class="topics-footer">
-                                    <button class="topics-reset" @click=${this.resetTopicSelection}>↺ Reset</button>
-                                  </div>
-                                </div>
-                              `
-              : ''}
-                        `
-        )}
-                    </div>
-                    <button class="add-filter-btn" @click=${this.addFilter}>+ Add filter</button>
-                    <div class="filter-footer">
-                      <button class="reset-btn" @click=${this.resetFilters}>↺ Reset</button>
-                    </div>
-                  </div>
-                `
-        : ''}
-          </div>
-          <div class="stats">
-            <span>⭘ ${this.getSolvedCount()}/${this.problems.length} Solved</span>
-            <span class="shuffle-btn" title="Random">⚄</span>
-          </div>
-        </div>
+                            ${topic.name}
+                            <span class="count">${topic.count || 0}</span>
+                        </span>
+                    `)}
+                </div>
 
-        <!-- Problem List -->
-        ${this.loading
-        ? this.renderLoading()
-        : this.problems.length === 0
-          ? html`<div class="empty">No problems found</div>`
-          : html`${this.renderTableHeader()}${this.renderVirtualizedList()}`}
+                <!-- Category Tabs -->
+                <vaadin-tabs 
+                    class="category-tabs"
+                    .selected=${this.selectedCategoryIndex}
+                    @selected-changed=${this.handleCategoryChange}
+                >
+                    ${CATEGORIES.map(cat => html`
+                        <vaadin-tab>${cat.icon} ${cat.name}</vaadin-tab>
+                    `)}
+                </vaadin-tabs>
 
-        <!-- Pagination -->
-        ${this.renderPagination()}
-      </div>
-    `;
+                <!-- Controls -->
+                <div class="controls">
+                    <vaadin-text-field
+                        class="search-field"
+                        placeholder="Search questions..."
+                        clear-button-visible
+                        .value=${this.searchQuery}
+                        @input=${this.handleSearch}
+                    >
+                        <span slot="prefix">🔍</span>
+                    </vaadin-text-field>
+
+                    <vaadin-select
+                        class="sort-select"
+                        .items=${this.sortOptions}
+                        .value=${this.selectedSort}
+                        @change=${this.handleSortChange}
+                    ></vaadin-select>
+
+                    <div class="stats">
+                        <span>⭘ ${this.getSolvedCount()}/${this.problems.length} Solved</span>
+                    </div>
+                </div>
+
+                <!-- Problem Grid -->
+                ${this.loading ? html`
+                    <vaadin-progress-bar indeterminate></vaadin-progress-bar>
+                ` : this.problems.length === 0 ? html`
+                    <div class="empty">No problems found</div>
+                ` : html`
+                    <vaadin-grid 
+                        .items=${this.problems}
+                        @click=${this.handleGridClick}
+                        theme="no-border row-stripes"
+                    >
+                        <vaadin-grid-column 
+                            header="Status" 
+                            width="80px" 
+                            flex-grow="0"
+                            .renderer=${this.statusRenderer}
+                        ></vaadin-grid-column>
+                        <vaadin-grid-column 
+                            header="Title" 
+                            .renderer=${this.titleRenderer}
+                        ></vaadin-grid-column>
+                        <vaadin-grid-column 
+                            header="Acceptance" 
+                            width="120px" 
+                            flex-grow="0"
+                            .renderer=${this.acceptanceRenderer}
+                        ></vaadin-grid-column>
+                        <vaadin-grid-column 
+                            header="Difficulty" 
+                            width="100px" 
+                            flex-grow="0"
+                            .renderer=${this.difficultyRenderer}
+                        ></vaadin-grid-column>
+                    </vaadin-grid>
+                `}
+
+                <!-- Pagination -->
+                ${totalPages > 1 ? html`
+                    <div class="pagination">
+                        <vaadin-button 
+                            theme="icon tertiary"
+                            ?disabled=${this.currentPage === 1}
+                            @click=${() => this.handlePageChange(this.currentPage - 1)}
+                        >‹</vaadin-button>
+                        
+                        <span class="page-info">
+                            Page ${this.currentPage} of ${totalPages}
+                        </span>
+                        
+                        <vaadin-button 
+                            theme="icon tertiary"
+                            ?disabled=${this.currentPage === totalPages}
+                            @click=${() => this.handlePageChange(this.currentPage + 1)}
+                        >›</vaadin-button>
+                    </div>
+                ` : ''}
+            </div>
+        `;
   }
 }
 

@@ -28,10 +28,13 @@ export interface Problem {
     isPremium?: boolean;
     topics?: Topic[];
     description?: string;
+    content?: string;
     examples?: string;
     constraints?: string;
     starterCode?: string;
     testCases?: TestCase[];
+    likes?: number;
+    dislikes?: number;
 }
 
 /** Test case for a problem */

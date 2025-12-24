@@ -9,6 +9,19 @@
         "preview": "vite preview --port 3003"
     },
     "dependencies": {
+        "@vaadin/app-layout": "^25.0.1",
+        "@vaadin/button": "^25.0.1",
+        "@vaadin/checkbox": "^25.0.1",
+        "@vaadin/combo-box": "^25.0.1",
+        "@vaadin/grid": "^25.0.1",
+        "@vaadin/icon": "^25.0.1",
+        "@vaadin/icons": "^25.0.1",
+        "@vaadin/progress-bar": "^25.0.1",
+        "@vaadin/select": "^25.0.1",
+        "@vaadin/tabs": "^25.0.1",
+        "@vaadin/text-field": "^25.0.1",
+        "@vaadin/tooltip": "^25.0.1",
+        "@vaadin/vaadin-lumo-styles": "^25.0.1",
         "lit": "^3.1.0"
     },
     "devDependencies": {
