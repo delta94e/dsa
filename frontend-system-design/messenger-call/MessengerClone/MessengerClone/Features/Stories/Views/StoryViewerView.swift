@@ -10,21 +10,21 @@ struct StoryViewerView: View {
     @State private var startTime: Date?
     @State private var isPaused = false
     @State private var pausedProgress: CGFloat = 0
-    
+
     let storyCount = 3
     let storyDuration: Double = 5
-    
+
     var body: some View {
         GeometryReader { geo in
             ZStack {
                 // Background image placeholder
                 Color.black
                     .ignoresSafeArea()
-                
+
                 // Story image placeholder - changes based on current index
                 storyGradient(for: currentIndex)
                     .ignoresSafeArea()
-                
+
                 // Story content placeholder
                 VStack {
                     Spacer()
@@ -35,7 +35,7 @@ struct StoryViewerView: View {
                         .foregroundColor(.white.opacity(0.5))
                     Spacer()
                 }
-                
+
                 // Overlay content
                 VStack(spacing: 0) {
                     // Progress bars
@@ -46,7 +46,7 @@ struct StoryViewerView: View {
                                     // Background
                                     Capsule()
                                         .fill(Color.white.opacity(0.3))
-                                    
+
                                     // Progress
                                     Capsule()
                                         .fill(Color.white)
@@ -58,7 +58,7 @@ struct StoryViewerView: View {
                     }
                     .padding(.horizontal, 12)
                     .padding(.top, 8)
-                    
+
                     // Header
                     HStack(spacing: 12) {
                         // Avatar
@@ -76,20 +76,20 @@ struct StoryViewerView: View {
                                     .foregroundColor(.white.opacity(0.8))
                                     .font(.system(size: 16))
                             )
-                        
+
                         // Name and time
                         HStack(spacing: 6) {
                             Text(story.name)
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.white)
-                            
+
                             Text("12h")
                                 .font(.system(size: 13))
                                 .foregroundColor(.white.opacity(0.7))
                         }
-                        
+
                         Spacer()
-                        
+
                         // Action buttons
                         HStack(spacing: 16) {
                             Button(action: {}) {
@@ -97,13 +97,13 @@ struct StoryViewerView: View {
                                     .font(.system(size: 18))
                                     .foregroundColor(.white)
                             }
-                            
+
                             Button(action: {}) {
                                 Image(systemName: "speaker.wave.2.fill")
                                     .font(.system(size: 18))
                                     .foregroundColor(.white)
                             }
-                            
+
                             Button(action: {
                                 stopTimer()
                                 isPresented = false
@@ -116,9 +116,9 @@ struct StoryViewerView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
-                    
+
                     Spacer()
-                    
+
                     // Bottom message bar
                     HStack(spacing: 12) {
                         // Message input
@@ -127,7 +127,7 @@ struct StoryViewerView: View {
                                 .font(.system(size: 16))
                                 .foregroundColor(.white)
                                 .accentColor(.white)
-                            
+
                             if messageText.isEmpty {
                                 Image(systemName: "touchid")
                                     .font(.system(size: 20))
@@ -140,7 +140,7 @@ struct StoryViewerView: View {
                             Capsule()
                                 .stroke(Color.white.opacity(0.3), lineWidth: 1)
                         )
-                        
+
                         // Reaction buttons
                         HStack(spacing: 8) {
                             Text("❤️")
@@ -154,7 +154,7 @@ struct StoryViewerView: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 16)
                 }
-                
+
                 // Tap gesture areas
                 HStack(spacing: 0) {
                     // Left side - go to previous
@@ -163,27 +163,31 @@ struct StoryViewerView: View {
                         .onTapGesture {
                             goToPrevious()
                         }
-                        .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
-                            if pressing {
-                                pauseStory()
-                            } else {
-                                resumeStory()
-                            }
-                        }, perform: {})
-                    
+                        .onLongPressGesture(
+                            minimumDuration: .infinity,
+                            pressing: { pressing in
+                                if pressing {
+                                    pauseStory()
+                                } else {
+                                    resumeStory()
+                                }
+                            }, perform: {})
+
                     // Right side - go to next
                     Color.clear
                         .contentShape(Rectangle())
                         .onTapGesture {
                             goToNext()
                         }
-                        .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
-                            if pressing {
-                                pauseStory()
-                            } else {
-                                resumeStory()
-                            }
-                        }, perform: {})
+                        .onLongPressGesture(
+                            minimumDuration: .infinity,
+                            pressing: { pressing in
+                                if pressing {
+                                    pauseStory()
+                                } else {
+                                    resumeStory()
+                                }
+                            }, perform: {})
                 }
             }
         }
@@ -194,53 +198,53 @@ struct StoryViewerView: View {
             stopTimer()
         }
     }
-    
+
     private func storyGradient(for index: Int) -> LinearGradient {
         let gradients: [[Color]] = [
             [.blue.opacity(0.3), .purple.opacity(0.5), .pink.opacity(0.3)],
             [.orange.opacity(0.3), .red.opacity(0.5), .yellow.opacity(0.3)],
-            [.green.opacity(0.3), .teal.opacity(0.5), .blue.opacity(0.3)]
+            [.green.opacity(0.3), .teal.opacity(0.5), .blue.opacity(0.3)],
         ]
         let colors = gradients[index % gradients.count]
         return LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
     }
-    
+
     private func progressFor(index: Int) -> CGFloat {
         if index < currentIndex {
-            return 1.0 // Completed
+            return 1.0  // Completed
         } else if index == currentIndex {
-            return progress // Current progress
+            return progress  // Current progress
         } else {
-            return 0 // Not started
+            return 0  // Not started
         }
     }
-    
+
     private func startProgress() {
         stopTimer()
         progress = 0
         startTime = Date()
-        
+
         // Use Timer instead of animation for more control
         timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { _ in
             guard let start = startTime else { return }
             let elapsed = Date().timeIntervalSince(start)
             let newProgress = min(elapsed / storyDuration, 1.0)
-            
+
             withAnimation(.linear(duration: 0.05)) {
                 progress = newProgress
             }
-            
+
             if newProgress >= 1.0 {
                 goToNext()
             }
         }
     }
-    
+
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
     }
-    
+
     private func goToNext() {
         stopTimer()
         if currentIndex < storyCount - 1 {
@@ -250,7 +254,7 @@ struct StoryViewerView: View {
             isPresented = false
         }
     }
-    
+
     private func goToPrevious() {
         stopTimer()
         if currentIndex > 0 {
@@ -258,30 +262,29 @@ struct StoryViewerView: View {
         }
         startProgress()
     }
-    
+
     private func pauseStory() {
         isPaused = true
         pausedProgress = progress
         stopTimer()
     }
-    
+
     private func resumeStory() {
         guard isPaused else { return }
         isPaused = false
-        
-        // Resume from where we paused
-        let remainingDuration = storyDuration * (1 - pausedProgress)
+
+        // Resume from where we paused by adjusting startTime backward
         startTime = Date().addingTimeInterval(-storyDuration * pausedProgress)
-        
+
         timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { _ in
             guard let start = startTime else { return }
             let elapsed = Date().timeIntervalSince(start)
             let newProgress = min(elapsed / storyDuration, 1.0)
-            
+
             withAnimation(.linear(duration: 0.05)) {
                 progress = newProgress
             }
-            
+
             if newProgress >= 1.0 {
                 goToNext()
             }

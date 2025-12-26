@@ -103,7 +103,7 @@ struct StoryItemView: View {
                 
                 // Status text bubble - positioned at top center, overlapping avatar
                 if let statusText = story.statusText {
-                    VStack(alignment: .center, spacing: 1) {
+                    VStack(alignment: .center, spacing: 2) {
                         // Main bubble
                         Text(statusText)
                             .font(.system(size: 9))

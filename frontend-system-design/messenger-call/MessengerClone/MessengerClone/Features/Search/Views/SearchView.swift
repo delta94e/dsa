@@ -238,7 +238,7 @@ struct SearchView: View {
                             MarqueeView {
                                 HStack(spacing: 8) {
                                     ForEach(0..<suggestions.count, id: \.self) { i in
-                                        SuggestionChip(emoji: suggestions[i].0, text: suggestions[i].1)
+                                        SearchSuggestionChip(emoji: suggestions[i].0, text: suggestions[i].1)
                                     }
                                 }
                             }
@@ -246,7 +246,7 @@ struct SearchView: View {
                             MarqueeView(delay: 0.5) {
                                 HStack(spacing: 8) {
                                     ForEach((0..<suggestions.count).reversed(), id: \.self) { i in
-                                        SuggestionChip(emoji: suggestions[i].0, text: suggestions[i].1)
+                                        SearchSuggestionChip(emoji: suggestions[i].0, text: suggestions[i].1)
                                     }
                                 }
                             }
@@ -306,8 +306,10 @@ struct SearchView: View {
             Spacer()
         }
         .background(Color.white)
-        .onAppear {
-            isSearchFocused = true
+        .onChange(of: isPresented) { oldValue, newValue in
+            if newValue {
+                isSearchFocused = true
+            }
         }
     }
 }
@@ -630,7 +632,7 @@ struct MarqueeView<Content: View>: View {
     }
 }
 
-struct SuggestionChip: View {
+struct SearchSuggestionChip: View {
     let emoji: String
     let text: String
     
