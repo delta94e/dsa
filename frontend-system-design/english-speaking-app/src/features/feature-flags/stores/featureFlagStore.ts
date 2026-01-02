@@ -137,33 +137,24 @@ export const useFeatureFlagStore = create<FeatureFlagState>()(
                 return userFlags[flagId]?.variant;
             },
 
-            // Start polling for real-time updates
+            // @deprecated - Polling is no longer recommended
+            // Flags are fetched on auth and refreshed when toggled (event-driven)
             startPolling: (intervalMs = DEFAULT_POLLING_INTERVAL) => {
-                const { pollingInterval, fetchUserFlags, fetchFlags } = get();
-
-                // Don't start if already polling
-                if (pollingInterval) return;
-
-                console.log(`🔄 Feature flags polling started (every ${intervalMs}ms)`);
-
-                // Only fetch user-specific flags during polling (less frequent)
-                // fetchFlags() is only called on initial load or manual refresh
-                const interval = setInterval(() => {
-                    fetchUserFlags();
-                    // fetchFlags(); // Commented out - only fetch on initial load
-                }, intervalMs);
-
-                set({ pollingInterval: interval });
+                console.warn(
+                    '[FeatureFlags] ⚠️ startPolling() is deprecated. ' +
+                    'Flags are now fetched on-demand when toggled. ' +
+                    'Remove startPolling() calls from your code.'
+                );
+                // No-op - polling disabled for performance
             },
 
-            // Stop polling
+            // @deprecated - Polling is no longer used
             stopPolling: () => {
-                const { pollingInterval } = get();
-                if (pollingInterval) {
-                    clearInterval(pollingInterval);
-                    set({ pollingInterval: null });
-                    console.log('🛑 Feature flags polling stopped');
-                }
+                console.warn(
+                    '[FeatureFlags] ⚠️ stopPolling() is deprecated. ' +
+                    'Polling is no longer used. Remove stopPolling() calls.'
+                );
+                // No-op - polling disabled
             },
         }),
         {

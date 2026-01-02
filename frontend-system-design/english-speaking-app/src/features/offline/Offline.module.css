@@ -1,0 +1,115 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--mantine-spacing-xl);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--mantine-spacing-xl);
+}
+
+.storageInfo {
+    display: flex;
+    gap: var(--mantine-spacing-md);
+    align-items: center;
+}
+
+.lessonGrid {
+    display: grid;
+    gap: var(--mantine-spacing-md);
+}
+
+.lessonCard {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.lessonCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--mantine-shadow-md);
+}
+
+.lessonHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--mantine-spacing-sm);
+}
+
+.lessonIcon {
+    font-size: 1.5rem;
+}
+
+.lessonMeta {
+    display: flex;
+    gap: var(--mantine-spacing-xs);
+    margin-top: var(--mantine-spacing-xs);
+}
+
+.lessonContent {
+    margin-top: var(--mantine-spacing-sm);
+}
+
+.downloadButton {
+    transition: all 0.2s;
+}
+
+.downloadButton:disabled {
+    opacity: 0.6;
+}
+
+.offlineIndicator {
+    position: fixed;
+    bottom: var(--mantine-spacing-md);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateX(-50%) translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+.syncBadge {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.emptyState {
+    text-align: center;
+    padding: var(--mantine-spacing-xl) * 2;
+}
+
+.emptyIcon {
+    font-size: 4rem;
+    margin-bottom: var(--mantine-spacing-md);
+}
+
+.progressBar {
+    margin-top: var(--mantine-spacing-sm);
+}
+
+.cachedBadge {
+    background: linear-gradient(135deg, var(--mantine-color-green-6), var(--mantine-color-teal-6));
+}

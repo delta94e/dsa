@@ -36,7 +36,11 @@ interface VoiceControlsProps {
     onLeave: () => void;
 }
 
-// Framer motion variants
+const buttonVariants = {
+    tap: { scale: 0.9 },
+    hover: { scale: 1.1 },
+};
+
 const pulseVariants = {
     pulse: {
         scale: [1, 1.1, 1],
@@ -51,10 +55,52 @@ const pulseVariants = {
     },
 };
 
-const buttonVariants = {
-    tap: { scale: 0.95 },
-    hover: { scale: 1.05 },
-};
+// Control Button Component
+function ControlButton({
+    icon,
+    label,
+    isActive,
+    activeColor,
+    onClick,
+    isPulsing,
+}: {
+    icon: React.ReactNode;
+    label: string;
+    isActive: boolean;
+    activeColor: string;
+    onClick: () => void;
+    isPulsing?: boolean;
+}) {
+    return (
+        <Tooltip label={label}>
+            <motion.div
+                variants={isPulsing ? pulseVariants : buttonVariants}
+                animate={isPulsing && isActive ? 'pulse' : 'idle'}
+                whileTap="tap"
+                whileHover="hover"
+            >
+                <ActionIcon
+                    size={56}
+                    radius="xl"
+                    onClick={onClick}
+                    style={{
+                        background: isActive 
+                            ? activeColor 
+                            : 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        boxShadow: isActive 
+                            ? `0 8px 24px ${activeColor}40` 
+                            : 'none',
+                        transition: 'all 0.2s',
+                    }}
+                >
+                    {icon}
+                </ActionIcon>
+            </motion.div>
+        </Tooltip>
+    );
+}
 
 export function VoiceControls({
     isMuted,
@@ -76,152 +122,124 @@ export function VoiceControls({
         <Group
             justify="center"
             gap="md"
-            p="lg"
+            p="xl"
             style={{
-                borderTop: '1px solid var(--mantine-color-gray-3)',
-                background: 'var(--mantine-color-gray-0)',
+                background: 'transparent',
             }}
         >
             {/* Mute Button */}
-            <Tooltip label={isMuted ? 'Unmute' : 'Mute'}>
-                <motion.div whileTap="tap" whileHover="hover" variants={buttonVariants}>
-                    <ActionIcon
-                        size="xl"
-                        radius="xl"
-                        variant={isMuted ? 'filled' : 'light'}
-                        color={isMuted ? 'red' : 'gray'}
-                        onClick={onToggleMute}
-                    >
-                        {isMuted ? <IconMicrophoneOff size={24} /> : <IconMicrophone size={24} />}
-                    </ActionIcon>
-                </motion.div>
-            </Tooltip>
+            <ControlButton
+                icon={isMuted ? <IconMicrophoneOff size={26} /> : <IconMicrophone size={26} />}
+                label={isMuted ? 'Bật mic' : 'Tắt mic'}
+                isActive={isMuted}
+                activeColor="#FF3B30"
+                onClick={onToggleMute}
+            />
 
-            {/* Video Toggle Button */}
-            <Tooltip label={isVideoEnabled ? 'Turn Off Camera' : 'Turn On Camera'}>
-                <motion.div whileTap="tap" whileHover="hover" variants={buttonVariants}>
-                    <ActionIcon
-                        size="xl"
-                        radius="xl"
-                        variant={isVideoEnabled ? 'light' : 'filled'}
-                        color={isVideoEnabled ? 'blue' : 'gray'}
-                        onClick={onToggleVideo}
-                    >
-                        {isVideoEnabled ? <IconVideo size={24} /> : <IconVideoOff size={24} />}
-                    </ActionIcon>
-                </motion.div>
-            </Tooltip>
+            {/* Video Button */}
+            <ControlButton
+                icon={isVideoEnabled ? <IconVideo size={26} /> : <IconVideoOff size={26} />}
+                label={isVideoEnabled ? 'Tắt camera' : 'Bật camera'}
+                isActive={isVideoEnabled}
+                activeColor="#007AFF"
+                onClick={onToggleVideo}
+            />
 
             {/* Screen Share Button */}
-            <Tooltip label={isScreenSharing ? 'Stop Sharing' : 'Share Screen'}>
-                <motion.div
-                    variants={pulseVariants}
-                    animate={isScreenSharing ? 'pulse' : 'idle'}
-                    whileTap="tap"
-                    whileHover="hover"
-                >
-                    <ActionIcon
-                        size="xl"
-                        radius="xl"
-                        variant={isScreenSharing ? 'filled' : 'light'}
-                        color={isScreenSharing ? 'green' : 'gray'}
-                        onClick={onToggleScreenShare}
-                    >
-                        {isScreenSharing ? <IconScreenShare size={24} /> : <IconScreenShareOff size={24} />}
-                    </ActionIcon>
-                </motion.div>
-            </Tooltip>
+            <ControlButton
+                icon={isScreenSharing ? <IconScreenShare size={26} /> : <IconScreenShareOff size={26} />}
+                label={isScreenSharing ? 'Dừng chia sẻ' : 'Chia sẻ màn hình'}
+                isActive={isScreenSharing}
+                activeColor="#34C759"
+                onClick={onToggleScreenShare}
+                isPulsing
+            />
 
             {/* Whiteboard Button */}
-            <Tooltip label={isWhiteboardOpen ? 'Close Whiteboard' : 'Open Whiteboard'}>
-                <motion.div
-                    variants={pulseVariants}
-                    animate={isWhiteboardOpen ? 'pulse' : 'idle'}
-                    whileTap="tap"
-                    whileHover="hover"
-                >
-                    <ActionIcon
-                        size="xl"
-                        radius="xl"
-                        variant={isWhiteboardOpen ? 'filled' : 'light'}
-                        color={isWhiteboardOpen ? 'violet' : 'gray'}
-                        onClick={onToggleWhiteboard}
-                    >
-                        {isWhiteboardOpen ? <IconChalkboard size={24} /> : <IconChalkboardOff size={24} />}
-                    </ActionIcon>
-                </motion.div>
-            </Tooltip>
+            <ControlButton
+                icon={isWhiteboardOpen ? <IconChalkboard size={26} /> : <IconChalkboardOff size={26} />}
+                label={isWhiteboardOpen ? 'Đóng bảng' : 'Mở bảng'}
+                isActive={isWhiteboardOpen}
+                activeColor="#AF52DE"
+                onClick={onToggleWhiteboard}
+                isPulsing
+            />
 
-            {/* Raise Hand Button - Feature Flag Controlled */}
+            {/* Raise Hand Button */}
             <AnimatePresence>
                 {flags.raise_hand.enabled && (
-                    <Tooltip label={isHandRaised ? 'Lower Hand' : 'Raise Hand'}>
-                        <motion.div
-                            variants={pulseVariants}
-                            animate={isHandRaised ? 'pulse' : 'idle'}
-                            whileTap="tap"
-                            whileHover="hover"
-                        >
-                            <ActionIcon
-                                size="xl"
-                                radius="xl"
-                                variant={isHandRaised ? 'filled' : 'light'}
-                                color={isHandRaised ? 'yellow' : 'gray'}
-                                onClick={onToggleHand}
-                            >
-                                {isHandRaised ? <IconHandStop size={24} /> : <IconHandOff size={24} />}
-                            </ActionIcon>
-                        </motion.div>
-                    </Tooltip>
+                    <ControlButton
+                        icon={isHandRaised ? <IconHandStop size={26} /> : <IconHandOff size={26} />}
+                        label={isHandRaised ? 'Hạ tay' : 'Giơ tay'}
+                        isActive={isHandRaised}
+                        activeColor="#FFCC00"
+                        onClick={onToggleHand}
+                        isPulsing
+                    />
                 )}
             </AnimatePresence>
 
-            {/* Divider - only show if reactions are enabled */}
+            {/* Divider */}
             {flags.reactions.enabled && (
-                <Box style={{ width: 1, height: 40, background: 'var(--mantine-color-gray-4)' }} />
+                <Box
+                    style={{
+                        width: 1,
+                        height: 40,
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        margin: '0 8px',
+                    }}
+                />
             )}
 
-            {/* Reaction Buttons - Feature Flag Controlled */}
+            {/* Reaction Buttons */}
             {flags.reactions.enabled && (
                 <>
-                    <Tooltip label="Clap 👏">
-                        <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.1 }}>
+                    <Tooltip label="Vỗ tay 👏">
+                        <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.15 }}>
                             <ActionIcon
-                                size="xl"
+                                size={48}
                                 radius="xl"
-                                variant="light"
-                                color="orange"
                                 onClick={() => onReaction('clap')}
+                                style={{
+                                    background: 'rgba(255, 149, 0, 0.2)',
+                                    border: '1px solid rgba(255, 149, 0, 0.3)',
+                                }}
                             >
                                 <Text size="xl">👏</Text>
                             </ActionIcon>
                         </motion.div>
                     </Tooltip>
 
-                    <Tooltip label="Thumbs Up 👍">
-                        <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.1 }}>
+                    <Tooltip label="Thích 👍">
+                        <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.15 }}>
                             <ActionIcon
-                                size="xl"
+                                size={48}
                                 radius="xl"
-                                variant="light"
-                                color="blue"
                                 onClick={() => onReaction('thumbs_up')}
+                                style={{
+                                    background: 'rgba(0, 122, 255, 0.2)',
+                                    border: '1px solid rgba(0, 122, 255, 0.3)',
+                                    color: '#007AFF',
+                                }}
                             >
-                                <IconThumbUp size={24} />
+                                <IconThumbUp size={22} />
                             </ActionIcon>
                         </motion.div>
                     </Tooltip>
 
-                    <Tooltip label="Heart ❤️">
-                        <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.1 }}>
+                    <Tooltip label="Yêu thích ❤️">
+                        <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.15 }}>
                             <ActionIcon
-                                size="xl"
+                                size={48}
                                 radius="xl"
-                                variant="light"
-                                color="pink"
                                 onClick={() => onReaction('heart')}
+                                style={{
+                                    background: 'rgba(255, 45, 85, 0.2)',
+                                    border: '1px solid rgba(255, 45, 85, 0.3)',
+                                    color: '#FF2D55',
+                                }}
                             >
-                                <IconHeart size={24} />
+                                <IconHeart size={22} />
                             </ActionIcon>
                         </motion.div>
                     </Tooltip>
@@ -229,13 +247,29 @@ export function VoiceControls({
             )}
 
             {/* Divider */}
-            <Box style={{ width: 1, height: 40, background: 'var(--mantine-color-gray-4)' }} />
+            <Box
+                style={{
+                    width: 1,
+                    height: 40,
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    margin: '0 8px',
+                }}
+            />
 
             {/* Leave Button */}
-            <Tooltip label="Leave Room">
-                <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}>
-                    <ActionIcon size="xl" radius="xl" variant="filled" color="red" onClick={onLeave}>
-                        <IconPhoneOff size={24} />
+            <Tooltip label="Rời phòng">
+                <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.1 }}>
+                    <ActionIcon
+                        size={56}
+                        radius="xl"
+                        onClick={onLeave}
+                        style={{
+                            background: '#FF3B30',
+                            color: 'white',
+                            boxShadow: '0 8px 24px rgba(255, 59, 48, 0.4)',
+                        }}
+                    >
+                        <IconPhoneOff size={26} />
                     </ActionIcon>
                 </motion.div>
             </Tooltip>

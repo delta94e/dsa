@@ -3,6 +3,7 @@
 // Components
 export { RoomCard } from './components/RoomCard';
 export { RoomFilters } from './components/RoomFilters';
+export { RoomsGridExplorer } from './components/RoomsGridExplorer';
 export { ParticipantCard } from './components/ParticipantCard';
 export { VoiceControls, type ReactionType } from './components/VoiceControls';
 export { AudioPlayer } from './components/AudioPlayer';

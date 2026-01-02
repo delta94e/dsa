@@ -234,8 +234,7 @@ struct NewNoteView: View {
         VStack(spacing: 0) {
             headerView
             Spacer()
-            thoughtBubble.padding(.bottom, 8)
-            userAvatar.padding(.bottom, 16)
+            thoughtBubbleWithAvatar.padding(.bottom, 16)
             mediaButtons.padding(.bottom, 24)
             friendSuggestions.padding(.bottom, 16)
             privacyText.padding(.bottom, 12)
@@ -270,51 +269,49 @@ struct NewNoteView: View {
         .padding(.top, 16)
     }
     
-    private var thoughtBubble: some View {
-        VStack(spacing: 4) {
-            // Main bubble
-            TextField("Share a thought...", text: $thoughtText)
-                .font(.system(size: 16))
+    private var thoughtBubbleWithAvatar: some View {
+        VStack(spacing: -4) {
+            // Input bubble
+            Text("Currently\nwatching 📺")
+                .font(.system(size: 14))
+                .foregroundColor(.black)
                 .multilineTextAlignment(.center)
-                .focused($isTextFieldFocused)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
+                .frame(width: 180)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
                 .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(.systemGray6))
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(Color.white)
+                        .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 2)
                 )
+                .zIndex(2) // Input on top
+                // Circle 1: Overlay at bottom center, shifted left
+                .overlay(alignment: .bottom) {
+                    Circle()
+                        .fill(Color.white)
+                        .shadow(color: .black.opacity(0.12), radius: 2, x: 0, y: 2)
+                        .frame(width: 14, height: 14)
+                        .offset(x: -50, y: 8) // User standard
+                }
             
-            // Thought bubble circles (curved path)
-            ZStack {
-                Circle()
-                    .fill(Color(.systemGray6))
-                    .frame(width: 14, height: 14)
-                    .offset(x: 0, y: 0)
-                
-                Circle()
-                    .fill(Color(.systemGray6))
-                    .frame(width: 10, height: 10)
-                    .offset(x: 8, y: 12)
-                
-                Circle()
-                    .fill(Color(.systemGray6))
-                    .frame(width: 6, height: 6)
-                    .offset(x: 14, y: 22)
-            }
-            .frame(height: 30)
+            // Avatar
+            Circle()
+                .fill(LinearGradient(colors: [.orange, .yellow], startPoint: .topLeading, endPoint: .bottomTrailing))
+                .frame(width: Constants.avatarSize, height: Constants.avatarSize)
+                .overlay(
+                    Image(systemName: "person.fill")
+                        .font(.system(size: 40))
+                        .foregroundColor(.white.opacity(0.8))
+                )
+                // Circle 2: Overlay at top center, shifted to 10h position
+                .overlay(alignment: .top) {
+                    Circle()
+                        .fill(Color.white)
+                        .shadow(color: .black.opacity(0.12), radius: 2, x: 0, y: 1)
+                        .frame(width: 9, height: 9)
+                        .offset(x: -38, y: 10) // User standard
+                }
         }
-        .padding(.horizontal, 60)
-    }
-    
-    private var userAvatar: some View {
-        Circle()
-            .fill(LinearGradient(colors: [.orange, .yellow], startPoint: .topLeading, endPoint: .bottomTrailing))
-            .frame(width: Constants.avatarSize, height: Constants.avatarSize)
-            .overlay(
-                Image(systemName: "person.fill")
-                    .font(.system(size: 40))
-                    .foregroundColor(.white.opacity(0.8))
-            )
     }
     
     private var mediaButtons: some View {

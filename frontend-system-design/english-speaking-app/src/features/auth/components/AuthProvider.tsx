@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { useFeatureFlagStore } from '@/stores/featureFlagStore';
+import { useFeatureFlagStream } from '@/shared/hooks/useFeatureFlagStream';
 
 interface AuthProviderProps {
     children: React.ReactNode;
@@ -12,10 +13,18 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
     const pathname = usePathname();
     const { checkAuth, isAuthenticated } = useAuthStore();
-    const { fetchUserFlags, startPolling, stopPolling } = useFeatureFlagStore();
+    const { fetchUserFlags } = useFeatureFlagStore();
 
     // Skip API calls on login page
     const isLoginPage = pathname === '/login' || pathname?.startsWith('/login');
+
+    // Connect to SSE stream for real-time flag updates when authenticated
+    useFeatureFlagStream({
+        enabled: isAuthenticated && !isLoginPage,
+        onFlagChange: (flagId, enabled) => {
+            console.log(`[AuthProvider] Feature flag changed: ${flagId} = ${enabled}`);
+        },
+    });
 
     useEffect(() => {
         // Skip all API calls on login page
@@ -30,20 +39,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     useEffect(() => {
         // Skip feature flag calls on login page or when not authenticated
         if (isLoginPage || !isAuthenticated) {
-            stopPolling();
             return;
         }
 
-        // Fetch feature flags for authenticated user
+        // Fetch feature flags once for authenticated user
+        // Real-time updates come via SSE stream
         fetchUserFlags();
-        // Start real-time flag sync (uses default 30 second interval)
-        startPolling();
-
-        // Cleanup on unmount
-        return () => {
-            stopPolling();
-        };
-    }, [isLoginPage, isAuthenticated, fetchUserFlags, startPolling, stopPolling]);
+    }, [isLoginPage, isAuthenticated, fetchUserFlags]);
 
     return <>{children}</>;
 }
