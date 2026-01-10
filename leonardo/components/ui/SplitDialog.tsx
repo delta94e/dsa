@@ -8,251 +8,300 @@
  */
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
 import {
-  forwardRef,
-  type ComponentPropsWithoutRef,
-  type ElementRef,
   type ReactNode,
+  type HTMLAttributes,
+  type ComponentPropsWithoutRef,
 } from "react";
+
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogClose,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+  DialogCloseButton,
+} from "./Dialog";
 
 // ============================================================================
-// SplitDialog (Root)
+// SplitDialog (Root) - Module 139211
 // ============================================================================
 
-const SplitDialog = DialogPrimitive.Root;
+interface SplitDialogProps extends ComponentPropsWithoutRef<typeof Dialog> {
+  children: ReactNode;
+}
+
+function SplitDialog({ children, ...props }: SplitDialogProps) {
+  return (
+    <Dialog data-slot="split-dialog" {...props}>
+      {children}
+    </Dialog>
+  );
+}
 
 // ============================================================================
 // SplitDialogTrigger
 // ============================================================================
 
-const SplitDialogTrigger = DialogPrimitive.Trigger;
+interface SplitDialogTriggerProps
+  extends ComponentPropsWithoutRef<typeof DialogTrigger> {
+  children: ReactNode;
+}
+
+function SplitDialogTrigger({ children, ...props }: SplitDialogTriggerProps) {
+  return (
+    <DialogTrigger data-slot="split-dialog-trigger" {...props}>
+      {children}
+    </DialogTrigger>
+  );
+}
 
 // ============================================================================
-// SplitDialogPortal
+// SplitDialogClose
 // ============================================================================
 
-const SplitDialogPortal = DialogPrimitive.Portal;
+interface SplitDialogCloseProps
+  extends ComponentPropsWithoutRef<typeof DialogClose> {
+  children: ReactNode;
+}
+
+function SplitDialogClose({ children, ...props }: SplitDialogCloseProps) {
+  return (
+    <DialogClose data-slot="split-dialog-close" {...props}>
+      {children}
+    </DialogClose>
+  );
+}
 
 // ============================================================================
-// SplitDialogOverlay
+// SplitDialogHeader
 // ============================================================================
 
-const SplitDialogOverlay = forwardRef<
-  ElementRef<typeof DialogPrimitive.Overlay>,
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay
-    ref={ref}
-    className={cn(
-      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className
-    )}
-    {...props}
-  />
-));
-SplitDialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
+function SplitDialogHeader({
+  className,
+  children,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <DialogHeader
+      data-slot="split-dialog-header"
+      className={cn(
+        "bg-gradient-bg-panel text-primary-foreground hidden min-h-[4.25rem] flex-col justify-center space-y-1.5 rounded-t-3xl border-b px-2.5 py-6 md:px-6 lg:flex",
+        "theme-rebrand:bg-none theme-rebrand:rounded-t-4xl",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </DialogHeader>
+  );
+}
+
+// ============================================================================
+// SplitDialogTitle
+// ============================================================================
+
+function SplitDialogTitle({
+  className,
+  children,
+  ...props
+}: ComponentPropsWithoutRef<typeof DialogTitle>) {
+  return (
+    <DialogTitle
+      data-slot="split-dialog-title"
+      className={className}
+      {...props}
+    >
+      {children}
+    </DialogTitle>
+  );
+}
+
+// ============================================================================
+// SplitDialogCloseButton
+// ============================================================================
+
+function SplitDialogCloseButton({
+  className,
+  children,
+  ...props
+}: ComponentPropsWithoutRef<typeof DialogCloseButton>) {
+  return (
+    <DialogCloseButton
+      data-slot="split-dialog-close-button"
+      className={cn("z-10", className)}
+      {...props}
+    >
+      {children}
+    </DialogCloseButton>
+  );
+}
 
 // ============================================================================
 // SplitDialogContent
 // ============================================================================
 
-const SplitDialogContent = forwardRef<
-  ElementRef<typeof DialogPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <SplitDialogPortal>
-    <SplitDialogOverlay />
+function SplitDialogContent({
+  className,
+  children,
+  ...props
+}: ComponentPropsWithoutRef<typeof DialogPrimitive.Content>) {
+  return (
     <DialogPrimitive.Content
-      ref={ref}
+      data-slot="split-dialog-content"
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-4xl translate-x-[-50%] translate-y-[-50%] gap-0 border bg-background shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-xl overflow-hidden",
-        "grid-cols-1 md:grid-cols-[320px_1fr]",
+        "bg-gradient-bg-dark border-primary flex h-full w-full flex-col overflow-hidden rounded-none p-0 md:rounded-3xl md:border lg:h-auto lg:max-w-[min(calc(100%-1.25rem),62.5rem)] lg:flex-row",
+        "theme-rebrand:before:z-20 theme-rebrand:md:rounded-r-4xl theme-rebrand:rounded-none theme-rebrand:before:rounded-none theme-rebrand:before:md:rounded-4xl theme-rebrand:max-md:border-none theme-rebrand:before:max-md:border-none theme-rebrand:max-md:bg-none theme-rebrand:before:max-md:bg-none",
         className
       )}
       {...props}
     >
       {children}
     </DialogPrimitive.Content>
-  </SplitDialogPortal>
-));
-SplitDialogContent.displayName = DialogPrimitive.Content.displayName;
-
-// ============================================================================
-// SplitDialogCloseButton
-// ============================================================================
-
-const SplitDialogCloseButton = forwardRef<
-  ElementRef<typeof DialogPrimitive.Close>,
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Close>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Close
-    ref={ref}
-    className={cn(
-      "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10",
-      className
-    )}
-    {...props}
-  >
-    <X className="h-4 w-4" />
-    <span className="sr-only">Close</span>
-  </DialogPrimitive.Close>
-));
-SplitDialogCloseButton.displayName = "SplitDialogCloseButton";
-
-// ============================================================================
-// SplitDialogMedia (Left side)
-// ============================================================================
-
-interface SplitDialogMediaProps {
-  children: ReactNode;
-  className?: string;
+  );
 }
-
-const SplitDialogMedia = forwardRef<HTMLDivElement, SplitDialogMediaProps>(
-  ({ children, className }, ref) => (
-    <div
-      ref={ref}
-      className={cn(
-        "relative hidden md:block bg-surface-secondary overflow-hidden",
-        className
-      )}
-    >
-      {children}
-    </div>
-  )
-);
-SplitDialogMedia.displayName = "SplitDialogMedia";
-
-// ============================================================================
-// SplitDialogMediaOverlay
-// ============================================================================
-
-interface SplitDialogMediaOverlayProps {
-  children: ReactNode;
-  className?: string;
-}
-
-const SplitDialogMediaOverlay = forwardRef<
-  HTMLDivElement,
-  SplitDialogMediaOverlayProps
->(({ children, className }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "absolute inset-0 flex flex-col items-center justify-center p-6 text-center text-white bg-gradient-to-t from-black/60 to-transparent",
-      className
-    )}
-  >
-    {children}
-  </div>
-));
-SplitDialogMediaOverlay.displayName = "SplitDialogMediaOverlay";
-
-// ============================================================================
-// SplitDialogMain (Right side)
-// ============================================================================
-
-interface SplitDialogMainProps {
-  children: ReactNode;
-  className?: string;
-}
-
-const SplitDialogMain = forwardRef<HTMLDivElement, SplitDialogMainProps>(
-  ({ children, className }, ref) => (
-    <div
-      ref={ref}
-      className={cn("relative flex flex-col min-h-[400px]", className)}
-    >
-      {children}
-    </div>
-  )
-);
-SplitDialogMain.displayName = "SplitDialogMain";
-
-// ============================================================================
-// SplitDialogHeader
-// ============================================================================
-
-const SplitDialogHeader = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn("flex flex-col space-y-1.5 text-center px-6 pt-6", className)}
-    {...props}
-  />
-);
-SplitDialogHeader.displayName = "SplitDialogHeader";
-
-// ============================================================================
-// SplitDialogTitle
-// ============================================================================
-
-const SplitDialogTitle = forwardRef<
-  ElementRef<typeof DialogPrimitive.Title>,
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title
-    ref={ref}
-    className={cn(
-      "text-xl font-semibold leading-none tracking-tight",
-      className
-    )}
-    {...props}
-  />
-));
-SplitDialogTitle.displayName = DialogPrimitive.Title.displayName;
 
 // ============================================================================
 // SplitDialogBody
 // ============================================================================
 
-const SplitDialogBody = ({
+function SplitDialogBody({
   className,
+  children,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex-1 px-6", className)} {...props} />
-);
-SplitDialogBody.displayName = "SplitDialogBody";
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <DialogBody
+      data-slot="split-dialog-body"
+      className={cn(
+        "bg-gradient-bg-dark theme-rebrand:bg-none text-primary-foreground flex-1 overflow-y-auto p-2.5 md:p-6 lg:p-9",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </DialogBody>
+  );
+}
 
 // ============================================================================
-// SplitDialogFooter
+// SplitDialogMedia
 // ============================================================================
 
-const SplitDialogFooter = ({
+function SplitDialogMedia({
   className,
+  children,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("px-6 pb-6", className)} {...props} />
-);
-SplitDialogFooter.displayName = "SplitDialogFooter";
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="split-dialog-media"
+      className={cn(
+        "relative h-24 w-full flex-shrink-0 overflow-hidden md:h-32 lg:h-auto lg:w-2/5 lg:rounded-l-3xl",
+        "theme-rebrand:md:rounded-l-4xl",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ============================================================================
+// SplitDialogMain
+// ============================================================================
+
+function SplitDialogMain({
+  className,
+  children,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="split-dialog-main"
+      className={cn(
+        "bg-gradient-bg-dark flex min-h-0 flex-1 flex-col md:rounded-r-3xl",
+        "theme-rebrand:bg-none theme-rebrand:md:rounded-r-4xl",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
 
 // ============================================================================
 // SplitDialogIconBadge
 // ============================================================================
 
-interface SplitDialogIconBadgeProps {
-  children: ReactNode;
-  className?: string;
+function SplitDialogIconBadge({
+  children,
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn(
+        "border-gradient-primary [&>svg]:path-gradient flex size-11.5 items-center justify-center rounded-full border-2 bg-black lg:size-21 lg:border-3 [&>svg]:size-7.5 [&>svg]:lg:size-13",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
 }
 
-const SplitDialogIconBadge = forwardRef<
-  HTMLDivElement,
-  SplitDialogIconBadgeProps
->(({ children, className }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "flex items-center justify-center size-16 rounded-full bg-primary/20 text-primary mb-4",
-      className
-    )}
-  >
-    {children}
-  </div>
-));
-SplitDialogIconBadge.displayName = "SplitDialogIconBadge";
+// ============================================================================
+// SplitDialogMediaOverlay
+// ============================================================================
+
+function SplitDialogMediaOverlay({
+  children,
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="split-dialog-media-overlay"
+      className={cn(
+        "text-heading-xs md:text-heading-lg absolute inset-0 z-10 flex items-center gap-3 bg-gradient-to-t from-black via-black/50 to-transparent px-2.5 py-6 font-semibold md:py-6 lg:flex-col lg:justify-end lg:py-10 lg:text-center",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ============================================================================
+// SplitDialogFooter
+// ============================================================================
+
+function SplitDialogFooter({
+  className,
+  children,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="split-dialog-footer"
+      className={cn(
+        "bg-gradient-bg-panel text-primary-foreground flex items-center justify-center gap-4 rounded-b-3xl border-t px-2.5 py-3.5 *:data-[slot*=dialog-close]:w-full *:data-[slot=button]:w-full md:px-6 md:py-4 md:*:data-[slot*=dialog-close]:max-w-70 md:*:data-[slot=button]:max-w-70",
+        "theme-rebrand:bg-none theme-rebrand:rounded-b-4xl",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
 
 // ============================================================================
 // Exports
@@ -261,16 +310,15 @@ SplitDialogIconBadge.displayName = "SplitDialogIconBadge";
 export {
   SplitDialog,
   SplitDialogTrigger,
-  SplitDialogPortal,
-  SplitDialogOverlay,
-  SplitDialogContent,
+  SplitDialogClose,
   SplitDialogCloseButton,
-  SplitDialogMedia,
-  SplitDialogMediaOverlay,
-  SplitDialogMain,
+  SplitDialogContent,
   SplitDialogHeader,
   SplitDialogTitle,
   SplitDialogBody,
-  SplitDialogFooter,
+  SplitDialogMedia,
+  SplitDialogMain,
   SplitDialogIconBadge,
+  SplitDialogMediaOverlay,
+  SplitDialogFooter,
 };

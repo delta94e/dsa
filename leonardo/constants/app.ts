@@ -1,48 +1,56 @@
 /**
  * Application Constants
- * 
+ *
  * Centralized constants for Leonardo.ai application.
  */
+
+import { MODEL_ARCHITECTURE } from "@/lib/constants/enums";
+import { MODEL_IDS } from "./models";
 
 // ============================================================================
 // Cookie Names
 // ============================================================================
 
-export const ANONYMOUS_ID_COOKIE_NAME = 'anonymous-id';
-export const SELECTED_TEAM_COOKIE_NAME = 'selected-team';
+export const ANONYMOUS_ID_COOKIE_NAME = "anonymous-id";
+export const SELECTED_TEAM_COOKIE_NAME = "selected-team";
+export const OPTIMISTIC_ID = "optimistic-id";
 
 // ============================================================================
 // CDN & Static Assets
 // ============================================================================
 
-export const LEONARDO_AI_CDN_STATIC_IMAGES_URL = 'https://cdn.leonardo.ai/static/images';
-export const LEONARDO_AI_CDN_STATIC_VIDEOS_URL = 'https://cdn.leonardo.ai/static/videos';
+export const LEONARDO_AI_CDN_STATIC_IMAGES_URL =
+  "https://cdn.leonardo.ai/static/images";
+export const LEONARDO_AI_CDN_STATIC_VIDEOS_URL =
+  "https://cdn.leonardo.ai/static/videos";
 export const CLOUDFLARE_CDN_ORIGINS = [
-    'https://cdn.leonardo.ai',
-    'https://cdn.dev.leonardo.ai',
+  "https://cdn.leonardo.ai",
+  "https://cdn.dev.leonardo.ai",
 ];
 
 // ============================================================================
 // Logo Assets
 // ============================================================================
 
-export const LEONARDO_LOGO = '/img/leonardo-logo.svg';
-export const LEONARDO_LOGO_FLAT = '/img/leonardo-logo-flat.svg';
-export const LEONARDO_LOGO_GREYSCALE = '/img/leonardo-logo-greyscale.svg';
-export const LEONARDO_LOGO_GREYSCALE_CARD = '/img/leonardo-logo-greyscale-card.svg';
-export const LEONARDO_LOGO_PNG = '/img/leonardo-logo.png';
-export const LEONARDO_LOGO_TEXT = '/img/leonardo-logo-text.svg';
-export const LEONARDO_LOGO_TEXT_PNG = '/img/leonardo-logo-text.png';
-export const LEONARDO_LOGO_WHITE_AND_GRADIENT_PNG = '/img/leonardo-logo-white-and-gradient.png';
+export const LEONARDO_LOGO = "/img/leonardo-logo.svg";
+export const LEONARDO_LOGO_FLAT = "/img/leonardo-logo-flat.svg";
+export const LEONARDO_LOGO_GREYSCALE = "/img/leonardo-logo-greyscale.svg";
+export const LEONARDO_LOGO_GREYSCALE_CARD =
+  "/img/leonardo-logo-greyscale-card.svg";
+export const LEONARDO_LOGO_PNG = "/img/leonardo-logo.png";
+export const LEONARDO_LOGO_TEXT = "/img/leonardo-logo-text.svg";
+export const LEONARDO_LOGO_TEXT_PNG = "/img/leonardo-logo-text.png";
+export const LEONARDO_LOGO_WHITE_AND_GRADIENT_PNG =
+  "/img/leonardo-logo-white-and-gradient.png";
 
 // ============================================================================
 // Image Size Suffixes
 // ============================================================================
 
-export const IMG_AS_SM = '?w=256';
-export const IMG_AS_MD = '?w=512';
-export const IMG_AS_LG = '?w=1250';
-export const IMG_AS_XL = '?w=1875';
+export const IMG_AS_SM = "?w=256";
+export const IMG_AS_MD = "?w=512";
+export const IMG_AS_LG = "?w=1250";
+export const IMG_AS_XL = "?w=1875";
 export const VIDEO_AS_MD = 512;
 
 // ============================================================================
@@ -56,7 +64,7 @@ export const DATASET_MAX_IMAGES = 50;
 export const DATASET_DESCRIPTION_MAX_LENGTH = 500;
 export const MAX_IMAGE_PROMPTS = 5;
 export const SEED_DIGITS_LIMIT = 10;
-export const FLUX_SEED_MAX_VALUE = 0x7FFFFFF5;
+export const FLUX_SEED_MAX_VALUE = 0x7ffffff5;
 
 // ============================================================================
 // UI Defaults
@@ -84,16 +92,16 @@ export const DIMENSION_PIXELS_ALCHEMY_DEFAULT_HEIGHT = 512;
 export const DIMENSION_PIXELS_PHOTOREAL_DEFAULT_WIDTH = 1024;
 export const DIMENSION_PIXELS_PHOTOREAL_DEFAULT_HEIGHT = 576;
 export const ASPECT_RATIO_PIXEL_INCREMENT_VALUE = 8;
-export const DIMENSIONS_AUTO_OPTION_VALUE = 'AUTO';
+export const DIMENSIONS_AUTO_OPTION_VALUE = "AUTO";
 
 export const GENERATION_PLACEHOLDER_IMAGE_DEFAULT_DIMENSIONS = {
-    WIDTH: 768,
-    HEIGHT: 768,
+  WIDTH: 768,
+  HEIGHT: 768,
 };
 
 export const GENERATION_PLACEHOLDER_VIDEO_DEFAULT_DIMENSIONS = {
-    WIDTH: 832,
-    HEIGHT: 480,
+  WIDTH: 832,
+  HEIGHT: 480,
 };
 
 export const RESTRICT_AT_PIXELS = [-1, 768, 1024, 1360];
@@ -121,16 +129,17 @@ export const CREATIVITY_SCALE_MAX_VALUE_ALCHEMY_V3 = 0.65;
 
 export const SCHEDULER_STEP_COUNT_DEFAULT = 30;
 export const SCHEDULER_STEP_COUNT_DEFAULT_LEONARDO = 10;
-export const SCHEDULER_DISABLED_TOOLTIP = 'Selecting a scheduler is disabled while using Alchemy or SDXL Lightning.';
+export const SCHEDULER_DISABLED_TOOLTIP =
+  "Selecting a scheduler is disabled while using Alchemy or SDXL Lightning.";
 
 // ============================================================================
 // Depth of Field
 // ============================================================================
 
 export const DEPTH_OF_FIELD_VALUES = {
-    High: 0.45,
-    Medium: 0.5,
-    Low: 0.55,
+  High: 0.45,
+  Medium: 0.5,
+  Low: 0.55,
 } as const;
 
 export const DEFAULT_DEPTH_OF_FIELD = DEPTH_OF_FIELD_VALUES.Low;
@@ -139,42 +148,209 @@ export const DEFAULT_DEPTH_OF_FIELD = DEPTH_OF_FIELD_VALUES.Low;
 // Stripe API URLs
 // ============================================================================
 
-export const STRIPE_TEAM_ACCEPT_DEAL = '/api/stripe/team-accept-deal';
-export const STRIPE_TEAM_BUY_PLAN = '/api/stripe/team-buy-plan';
-export const STRIPE_CHECK_PLAN_SUBSCRIPTION_STATUS = '/api/stripe/check-plan-subscription-status';
+export const STRIPE_TEAM_ACCEPT_DEAL = "/api/stripe/team-accept-deal";
+export const STRIPE_TEAM_BUY_PLAN = "/api/stripe/team-buy-plan";
+export const STRIPE_CHECK_PLAN_SUBSCRIPTION_STATUS =
+  "/api/stripe/check-plan-subscription-status";
 
 // ============================================================================
 // Payments
 // ============================================================================
 
 export const CREDIT_TO_DOLLAR_RATE = 0.001495;
-export const BUY_OFFER_ACCEPTED_ROUTE = '/buy?offer-accepted=true';
-export const IS_RETENTION_OFFERS_MONTHLY_ONLY = true;
+export const BUY_OFFER_ACCEPTED_ROUTE = "/buy?offer-accepted=true";
+
+export const FEED_TYPES = {
+  YOURS: "personal-feed",
+  FOLLOWERS: "followers-feed",
+  LIKED: "liked-feed",
+  COMMUNITY: "community-feed",
+  COMMUNITY_PUBLIC: "community-feed-public",
+  TEAM: "team-feed",
+  PERSONAL_TEAM: "personal-team-feed",
+  COLLECTIONS: "collections",
+  TEAM_COLLECTIONS: "team-collections",
+  YOUR_COLLECTIONS: "your-collections",
+  TEAM_HOME: "team-home",
+  MODEL: "model",
+  TEAM_MODEL: "team-model",
+  PROFILE: "profile",
+  TEAM_PROFILE: "team-profile",
+  TRAINING_DATASET_TEAM_FEED: "training-dataset-team-feed",
+  TRAINING_DATASET_PERSONAL_TEAM: "training-dataset-personal-team",
+  TRAINING_DATASET_YOURS: "training-dataset-yours",
+  TRAINING_DATASET_COMMUNITY: "training-dataset-community",
+} as const;
+
+export const PERSONAL_LIBRARY_FEEDS = [
+  FEED_TYPES.YOURS,
+  FEED_TYPES.FOLLOWERS,
+  FEED_TYPES.LIKED,
+  FEED_TYPES.COLLECTIONS,
+];
+
+export const TEAM_FEEDS = [
+  FEED_TYPES.PERSONAL_TEAM,
+  FEED_TYPES.TEAM,
+  FEED_TYPES.COLLECTIONS,
+  FEED_TYPES.TEAM_COLLECTIONS,
+  FEED_TYPES.YOUR_COLLECTIONS,
+  FEED_TYPES.TEAM_HOME,
+  FEED_TYPES.TRAINING_DATASET_TEAM_FEED,
+  FEED_TYPES.TRAINING_DATASET_PERSONAL_TEAM,
+  FEED_TYPES.TEAM_MODEL,
+  FEED_TYPES.TEAM_PROFILE,
+];
+
+export const TEAM_LIBRARY_IMAGE_FEEDS = [
+  FEED_TYPES.PERSONAL_TEAM,
+  FEED_TYPES.TEAM,
+];
+
+export const TEAM_LIBRARY_COLLECTION_FEEDS = [
+  FEED_TYPES.COLLECTIONS,
+  FEED_TYPES.TEAM_COLLECTIONS,
+  FEED_TYPES.YOUR_COLLECTIONS,
+];
+
+export const TRAINING_DATASET_TABS = {
+  DATASETS: "datasets",
+  JOB_STATUS: "job-status",
+} as const;
+
+export const SLUG_EXCLUDED_WORDS = new Set([
+  "a",
+  "an",
+  "the",
+  "and",
+  "or",
+  "but",
+  "in",
+  "on",
+  "at",
+  "to",
+  "for",
+  "of",
+  "with",
+  "by",
+  "from",
+  "through",
+  "during",
+  "before",
+  "after",
+  "above",
+  "below",
+  "under",
+  "over",
+  "between",
+  "within",
+  "is",
+  "am",
+  "are",
+  "was",
+  "were",
+  "be",
+  "being",
+  "been",
+  "have",
+  "has",
+  "had",
+  "do",
+  "does",
+  "did",
+  "will",
+  "would",
+  "could",
+  "should",
+  "can",
+  "must",
+  "this",
+  "that",
+  "these",
+  "those",
+  "here",
+  "there",
+  "where",
+  "when",
+  "why",
+  "how",
+  "what",
+  "which",
+  "who",
+  "i",
+  "you",
+  "we",
+  "they",
+  "me",
+  "us",
+  "them",
+  "my",
+  "your",
+  "our",
+  "their",
+  // ... (keeping list short for brevity if lengthy, but will include common ones)
+  "image",
+  "generation",
+  "create",
+  "make",
+  // Portuguese
+  "o",
+  "os",
+  "as",
+  "um",
+  "uma",
+  "de",
+  "do",
+  "da",
+  "dos",
+  "das",
+  "em",
+  "no",
+  "na",
+  "nos",
+  "nas",
+  // German
+  "der",
+  "die",
+  "das",
+  "den",
+  "dem",
+  "des",
+  "ein",
+  "eine",
+  "einen",
+  "einem",
+  "und",
+  "oder",
+  "aber",
+]);
+
+export const DEFAULT_MODAL_PAGE_SIZE = 20;
 
 // ============================================================================
 // Tooltips & Messages
 // ============================================================================
 
-export const BANDAID_TOKEN_TOOLTIP = 'It may take up to an hour to update your tokens.';
-export const UPGRADE_TOOLTIP = 'Upgrade to modify this setting';
+export const BANDAID_TOKEN_TOOLTIP =
+  "It may take up to an hour to update your tokens.";
+export const UPGRADE_TOOLTIP = "Upgrade to modify this setting";
 export const THIRD_PARTY_MODEL_RELAXED_GENERATION_DISCLAIMER =
-    "These models aren't available in Relaxed mode because they rely on paid third-party APIs which bill per use.";
+  "These models aren't available in Relaxed mode because they rely on paid third-party APIs which bill per use.";
 
 // ============================================================================
 // Special IDs
 // ============================================================================
 
-export const OPTIMISTIC_ID = 'optimistic-id';
-export const STATUS_SENDING = 'UNKNOWN';
+export const STATUS_SENDING = "UNKNOWN";
 
 // ============================================================================
 // All Models Filter
 // ============================================================================
 
 export const ALL_MODELS_FILTER_OPTION = {
-    id: 'all_models',
-    label: 'All Models',
-    value: '',
+  id: "all_models",
+  label: "All Models",
+  value: "",
 } as const;
 
 // ============================================================================
@@ -182,11 +358,31 @@ export const ALL_MODELS_FILTER_OPTION = {
 // ============================================================================
 
 export const SUSPENSION_STATUS_TYPE = {
-    TEMPORARILY_SUSPENDED: 'TEMPORARILY_SUSPENDED',
-    WARNING: 'WARNING',
-    SUSPENDED: 'SUSPENDED',
-    ACTIVE: 'ACTIVE',
+  TEMPORARILY_SUSPENDED: "TEMPORARILY_SUSPENDED",
+  WARNING: "WARNING",
+  SUSPENDED: "SUSPENDED",
+  PERMANENTLY_SUSPENDED: "PERMANENTLY_SUSPENDED",
+  MANUALLY_SUSPENDED: "MANUALLY_SUSPENDED",
+  ACTIVE: "ACTIVE",
 } as const;
 
-export type SuspensionStatusType = typeof SUSPENSION_STATUS_TYPE[keyof typeof SUSPENSION_STATUS_TYPE];
+export type SuspensionStatusType =
+  (typeof SUSPENSION_STATUS_TYPE)[keyof typeof SUSPENSION_STATUS_TYPE];
 
+export const PHOTO_REAL_MODEL_DATA = {
+  id: MODEL_IDS.PHOTOREAL,
+  name: "PhotoReal",
+  description:
+    "Leonardo PhotoReal is our latest innovation, a powerful pipeline designed to generate hyper-realistic photos and lifelike portraits.",
+  user: { username: "Leonardo" },
+  imageUrl: "/img/photoreal-model.webp",
+  sdVersion: MODEL_ARCHITECTURE.v1_5,
+};
+
+// ============================================================================
+// Survey Types
+// ============================================================================
+
+export const SURVEY_TYPE = {
+  SUBSCRIPTION_CANCELLATION_REQUEST: "subscription_cancellation_request",
+} as const;

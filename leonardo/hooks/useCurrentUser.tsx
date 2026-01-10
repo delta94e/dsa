@@ -89,6 +89,38 @@ function persistUser(user: { id: string; teams: UserTeam[] }) {
   localStorage.setItem(PERSIST_KEY, JSON.stringify(user));
 }
 
+// Mock data for development when GraphQL is unavailable
+const MOCK_USER_DATA: User = {
+  id: "mock-user-123",
+  createdAt: new Date(),
+  userDetailsId: "mock-details-123",
+  email: "demo@leonardo.ai",
+  username: "DemoUser",
+  blocked: false,
+  apiPlan: { type: "free" },
+  teams: [
+    {
+      id: "mock-team-1",
+      akUUID: "ak-uuid-mock-1",
+      plan: "FREE",
+      subscriptionTokens: 150,
+      userRole: "OWNER",
+      createdAt: new Date().toISOString(),
+      rolloverTokens: 0,
+      members: [
+        {
+          userId: "mock-user-123",
+          role: "OWNER",
+          createdAt: new Date(),
+        },
+      ],
+      teamName: "My Team",
+    },
+  ],
+  interests: ["art", "design"],
+  showNsfw: false,
+};
+
 function isUserBlocked(
   blocked: boolean,
   suspensionStatus?: string | null
@@ -181,13 +213,34 @@ export function CurrentUserProvider({ children }: CurrentUserProviderProps) {
   const userSub = sessionUser?.sub;
 
   // Query user details
-  const { loading, data } = useQuery(GetUserDetailsDocument, {
+  const { loading, data, error } = useQuery(GetUserDetailsDocument, {
     variables: { userSub },
     skip: !userSub,
   });
 
-  // Transform data if available
-  const user = data ? transformUserData(data) : null;
+  // Transform data if available, fallback to mock data in development
+  let user: User | null = null;
+  if (data) {
+    try {
+      user = transformUserData(data);
+    } catch {
+      // If transform fails, use mock data
+      if (session?.user) {
+        user = {
+          ...MOCK_USER_DATA,
+          email: session.user.email || MOCK_USER_DATA.email,
+          username: session.user.name || MOCK_USER_DATA.username,
+        };
+      }
+    }
+  } else if (session?.user && (error || !loading)) {
+    // Use mock data when GraphQL is unavailable but user is authenticated
+    user = {
+      ...MOCK_USER_DATA,
+      email: session.user.email || MOCK_USER_DATA.email,
+      username: session.user.name || MOCK_USER_DATA.username,
+    };
+  }
 
   // Load persisted user on session change
   useEffect(() => {

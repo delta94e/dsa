@@ -4,7 +4,7 @@ import { useEffect, type RefObject } from 'react';
 
 interface UseClickOutsideOptions {
     ref: RefObject<HTMLElement | null>;
-    onClickOutside: () => void;
+    onClickOutside: (event: MouseEvent | TouchEvent) => void;
     enabled?: boolean;
 }
 
@@ -27,7 +27,7 @@ export function useClickOutside({
 
         const handleClickOutside = (event: MouseEvent | TouchEvent) => {
             if (ref.current && !ref.current.contains(event.target as Node)) {
-                onClickOutside();
+                onClickOutside(event);
             }
         };
 
@@ -44,3 +44,4 @@ export function useClickOutside({
 }
 
 export default useClickOutside;
+

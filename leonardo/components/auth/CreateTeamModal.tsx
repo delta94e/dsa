@@ -14,9 +14,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FC } from "react";
 
 import { SelectAPlan } from "@/components/auth/SelectAPlan";
-import { AngleDownIcon } from "@/components/icons/AngleDownIcon";
-import { InfoCircleOutlineIcon } from "@/components/icons/InfoCircleOutlineIcon";
-import { UsersOutlineIcon } from "@/components/icons/UsersOutlineIcon";
+import {
+  AngleDownIcon,
+  InfoCircleOutlineIcon,
+  UsersOutlineIcon,
+} from "@/components/icons";
 import { AvatarWithName } from "@/components/ui/AvatarWithName";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -49,31 +51,31 @@ import {
   TEAM_PLANS_COST_PER_SEAT,
   type TeamPlan,
 } from "@/constants/plans";
-import {
-  GetTeamPlanOffersDocument,
-  GetTeamPlanOffersData,
-  type TeamDeal,
-} from "@/lib/graphql/queries/team";
 import { useSelectedTeam } from "@/hooks/useSelectedTeam";
 import { useTeamPlanDetails } from "@/hooks/useTeamPlanDetails";
 import { useAvailableTeamPlanOffer } from "@/hooks/useTeamPlanOffers";
-import { useToast, TOAST_TYPES } from "@/hooks/useToast";
-import { teamAcceptDeal } from "@/lib/api/teamAcceptDeal";
-import { teamBuyPlanSubscription } from "@/lib/api/teamBuyPlanSubscription";
-import { PremiumPlansEvents, IntentToPayEvents } from "@/lib/analytics/events";
+import { TOAST_TYPES, useToast } from "@/hooks/useToast";
 import { track } from "@/lib/analytics";
-import {
-  clearEcommerceObject,
-  createEcommerceTrackingItem,
-  formatSubscriptionBillingCost,
-  getUtmParamsFromSession,
-} from "@/lib/analytics/utils";
+import { IntentToPayEvents, PremiumPlansEvents } from "@/lib/analytics/events";
 import {
   MODAL_TEAM_CREATION_CLOSE_BUTTON,
   MODAL_TEAM_CREATION_SELECT_A_PLAN_BACK_BUTTON,
   MODAL_TEAM_CREATION_SELECT_A_PLAN_BUTTON,
   MODAL_TEAM_CREATION_SELECT_A_PLAN_CHECKOUT_BUTTON,
 } from "@/lib/analytics/trackingIds";
+import {
+  clearEcommerceObject,
+  createEcommerceTrackingItem,
+  formatSubscriptionBillingCost,
+  getUtmParamsFromSession,
+} from "@/lib/analytics/utils";
+import { teamAcceptDeal } from "@/lib/api/teamAcceptDeal";
+import { teamBuyPlanSubscription } from "@/lib/api/teamBuyPlanSubscription";
+import {
+  GetTeamPlanOffersData,
+  GetTeamPlanOffersDocument,
+  type TeamDeal,
+} from "@/lib/graphql/queries/team";
 import { useAppSelector } from "@/store/hooks";
 
 // ============================================================================

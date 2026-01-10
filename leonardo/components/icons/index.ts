@@ -18,11 +18,16 @@ export { HistoryIcon } from './HistoryIcon';
 export { FavoritesIcon } from './FavoritesIcon';
 export { ApiIcon } from './ApiIcon';
 export { CloseIcon } from './CloseIcon';
+export { TimesIcon } from './TimesIcon';
 export { LoginIcon } from './LoginIcon';
 export { LogoutIcon } from './LogoutIcon';
 export { CheckIcon } from './CheckIcon';
 export { CaretDownIcon } from './CaretDownIcon';
 export { PlusIcon } from './PlusIcon';
+export { MinusIcon } from './MinusIcon';
+export { AspectRatioIcon } from './AspectRatioIcon';
+export { StyleIcon } from './StyleIcon';
+export { ImagePlusIcon } from './ImagePlusIcon';
 
 // Leonardo specific icons
 export { LeonardoLogoIcon } from './LeonardoLogoIcon';
@@ -39,7 +44,9 @@ export { ChevronLeftIcon } from './ChevronLeftIcon';
 export { ChevronRightIcon } from './ChevronRightIcon';
 export { DiamondIcon } from './DiamondIcon';
 export { AngleDownIcon } from './AngleDownIcon';
-
+export { UsersOutlineIcon } from './UsersOutlineIcon';
+export { InfoCircleOutlineIcon } from './InfoCircleOutlineIcon';
+export { TrashOutlineIcon } from './TrashOutlineIcon';
 // Social media icons
 export {
     GlobeIcon,

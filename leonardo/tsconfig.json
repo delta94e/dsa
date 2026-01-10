@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "framer-motion": ["./node_modules/framer-motion/types/index.d.ts"]
     }
   },
   "include": [

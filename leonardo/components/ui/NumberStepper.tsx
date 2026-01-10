@@ -7,9 +7,11 @@
  * Matches production bundle module 894468.
  */
 
-import { type FC, type ChangeEvent } from "react";
+import { type FC, useState, useEffect } from "react";
 
-import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
+import { Input } from "@/components/ui/Input";
+import { MinusIcon, PlusIcon } from "@/components/icons";
 
 // ============================================================================
 // Types
@@ -17,12 +19,12 @@ import { Button } from "@/components/ui/Button";
 
 interface NumberStepperProps {
   value: number;
-  onChange: (value: number, rawValue: number) => void;
   min?: number;
   max?: number;
+  precision?: number;
   step?: number;
-  disabled?: boolean;
-  className?: string;
+  onChange?: (normalizedValue: number, rawValue: number) => void;
+  isDisabled?: boolean;
 }
 
 // ============================================================================
@@ -31,84 +33,180 @@ interface NumberStepperProps {
 
 export const NumberStepper: FC<NumberStepperProps> = ({
   value,
-  onChange,
-  min = 0,
-  max = Infinity,
+  min,
+  max,
+  precision = 0,
   step = 1,
-  disabled = false,
-  className = "",
+  onChange,
+  isDisabled,
 }) => {
-  const handleDecrement = () => {
-    const newValue = Math.max(min, value - step);
-    onChange(newValue, newValue);
+  const [inputValue, setInputValue] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (!isEditing) {
+      setInputValue(value.toString());
+    }
+  }, [value, isEditing]);
+
+  const normalize = (input: number): number => {
+    if (!Number.isFinite(input)) {
+      console.warn("NumberStepper: input must be a finite number");
+      return value;
+    }
+
+    if (
+      !(
+        (min === undefined || Number.isFinite(min)) &&
+        (max === undefined || Number.isFinite(max))
+      ) ||
+      (min !== undefined && max !== undefined && max < min)
+    ) {
+      return value;
+    }
+
+    let result = input;
+
+    if (min !== undefined && Number.isFinite(min)) {
+      result = Math.max(min, result);
+    }
+    if (max !== undefined && Number.isFinite(max)) {
+      result = Math.min(max, result);
+    }
+
+    const precisionValue =
+      precision === undefined || !Number.isFinite(precision) || precision < 0
+        ? 0
+        : Math.floor(precision);
+    const factor = Math.pow(10, precisionValue);
+    result = Math.round(result * factor) / factor;
+
+    if (!Number.isFinite(result)) {
+      console.warn(
+        "NumberStepper: normalization resulted in a non-finite number"
+      );
+      return value;
+    }
+
+    return result;
+  };
+
+  const handleChange = (input: number) => {
+    const normalized = normalize(input);
+    onChange?.(normalized, input);
   };
 
   const handleIncrement = () => {
-    const newValue = Math.min(max, value + step);
-    onChange(newValue, newValue);
+    setIsEditing(false);
+    handleChange(value + step);
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const rawValue = parseInt(e.target.value, 10);
-    if (isNaN(rawValue)) {
-      onChange(min, 0);
-      return;
-    }
-    // Clamp value between min and max
-    const clampedValue = Math.max(min, Math.min(max, rawValue));
-    onChange(clampedValue, rawValue);
+  const handleDecrement = () => {
+    setIsEditing(false);
+    handleChange(value - step);
   };
 
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-lg"
+    <div className="group flex w-fit items-stretch">
+      <IconButton
+        className="rounded-r-none border-r-0"
+        variant="secondary"
+        size="sm"
+        aria-label={`Decrease by ${step}`}
         onClick={handleDecrement}
-        disabled={disabled || value <= min}
-        aria-label="Decrease"
+        disabled={isDisabled}
+        type="button"
       >
-        <svg
-          className="size-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M5 12h14" />
-        </svg>
-      </Button>
+        <MinusIcon />
+      </IconButton>
 
-      <input
+      <Input
         type="number"
-        value={value}
-        onChange={handleInputChange}
-        disabled={disabled}
+        role="spinbutton"
+        size="sm"
+        aria-valuenow={value}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-invalid={
+          (min !== undefined && value < min) ||
+          (max !== undefined && value > max)
+        }
+        aria-label="Number stepper"
+        value={inputValue}
         min={min}
         max={max}
-        className="bg-surface-secondary h-8 w-14 rounded-lg border-none text-center text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-        aria-label="Number value"
+        step={step}
+        onChange={(e) => {
+          const val = e.target.value;
+          setInputValue(val);
+          setIsEditing(true);
+
+          if (val === "" || val === "-") {
+            return;
+          }
+
+          const parsed = parseFloat(val);
+          if (!isNaN(parsed)) {
+            handleChange(parsed);
+          }
+        }}
+        onBlur={() => {
+          setIsEditing(false);
+
+          if (inputValue === "" || inputValue === "-") {
+            handleChange(0);
+          } else {
+            const parsed = parseFloat(inputValue);
+            if (!isNaN(parsed)) {
+              handleChange(parsed);
+            }
+          }
+
+          setInputValue(value.toString());
+        }}
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          switch (e.key) {
+            case "ArrowUp":
+              e.preventDefault();
+              setIsEditing(false);
+              handleIncrement();
+              break;
+            case "ArrowDown":
+              e.preventDefault();
+              setIsEditing(false);
+              handleDecrement();
+              break;
+            case "Home":
+              e.preventDefault();
+              setIsEditing(false);
+              if (min !== undefined) {
+                handleChange(min);
+              }
+              break;
+            case "End":
+              e.preventDefault();
+              setIsEditing(false);
+              if (max !== undefined) {
+                handleChange(max);
+              }
+              break;
+          }
+        }}
+        disabled={isDisabled}
+        className="w-12 min-w-12 [appearance:textfield] rounded-none text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
 
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-lg"
+      <IconButton
+        className="rounded-l-none border-l-0"
+        variant="secondary"
+        size="sm"
+        aria-label={`Increase by ${step}`}
         onClick={handleIncrement}
-        disabled={disabled || value >= max}
-        aria-label="Increase"
+        disabled={isDisabled}
+        type="button"
       >
-        <svg
-          className="size-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-      </Button>
+        <PlusIcon />
+      </IconButton>
     </div>
   );
 };

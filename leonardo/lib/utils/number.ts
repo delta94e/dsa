@@ -13,14 +13,14 @@
  * Format a number with comma separators (e.g., 1000000 -> "1,000,000")
  */
 export function formatNumberWithCommas(value: number | string): string {
-  const num = typeof value === 'string' ? parseFloat(value) : value;
-  
+  const num = typeof value === "string" ? parseFloat(value) : value;
+
   if (isNaN(num)) return String(value);
-  
+
   // Handle decimals
-  const [intPart, decPart] = num.toString().split('.');
-  const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  
+  const [intPart, decPart] = num.toString().split(".");
+  const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
   return decPart ? `${formattedInt}.${decPart}` : formattedInt;
 }
 
@@ -28,7 +28,7 @@ export function formatNumberWithCommas(value: number | string): string {
  * Parse a formatted number string back to number (e.g., "1,000,000" -> 1000000)
  */
 export function parseFormattedNumber(value: string): number {
-  return parseFloat(value.replace(/,/g, ''));
+  return parseFloat(value.replace(/,/g, ""));
 }
 
 /**
@@ -50,7 +50,7 @@ export function roundToDecimal(value: number, decimals: number = 2): number {
  * Check if a value is a valid number
  */
 export function isValidNumber(value: unknown): value is number {
-  return typeof value === 'number' && !isNaN(value) && isFinite(value);
+  return typeof value === "number" && !isNaN(value) && isFinite(value);
 }
 
 /**
@@ -72,11 +72,35 @@ export function percentage(value: number, total: number): number {
  * Format bytes to human readable string
  */
 export function formatBytes(bytes: number, decimals: number = 2): string {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) return "0 Bytes";
 
   const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${sizes[i]}`;
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${
+    sizes[i]
+  }`;
 }
+
+/**
+ * Add ordinal suffix to number (1st, 2nd, 3rd, 4th)
+ */
+export const toOrdinal = (n: number): string => {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+
+  if (mod10 === 1 && mod100 !== 11) {
+    return `${n}st`;
+  }
+
+  if (mod10 === 2 && mod100 !== 12) {
+    return `${n}nd`;
+  }
+
+  if (mod10 === 3 && mod100 !== 13) {
+    return `${n}rd`;
+  }
+
+  return `${n}th`;
+};

@@ -89,3 +89,44 @@ export const PollAssetVariationsStatusesDocument = gql`
     ${GeneratedImageVariationsFragment}
     ${GeneratedImageVariationMotionsFragment}
 `;
+
+export const GetViewerUploadsDocument = gql`
+    query GetViewerUploads(
+        $where: init_images_bool_exp
+        $limit: Int
+        $offset: Int
+    ) {
+        init_images(
+            where: $where
+            order_by: [{ createdAt: desc }]
+            limit: $limit
+            offset: $offset
+        ) {
+            id
+            url
+            createdAt
+            generations {
+                imageWidth
+                imageHeight
+            }
+        }
+    }
+`;
+
+export interface GetViewerUploadsVariables {
+    where?: Record<string, any>;
+    limit?: number;
+    offset?: number;
+}
+
+export interface GetViewerUploadsData {
+    init_images: {
+        id: string;
+        url: string;
+        createdAt: string;
+        generations: {
+            imageWidth: number;
+            imageHeight: number;
+        }[];
+    }[];
+}

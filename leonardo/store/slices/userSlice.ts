@@ -59,22 +59,53 @@ export interface UserState {
 }
 
 // ============================================================================
+// Mock Data for Development
+// ============================================================================
+
+const MOCK_TEAM: Team = {
+    akUUID: 'ak-uuid-mock-1',
+    id: 'mock-team-1',
+    teamName: 'My Team',
+    teamLogoUrl: undefined,
+    plan: 'FREE',
+    planSubscribeFrequency: 'monthly',
+    planTokenRenewalDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    planCustomTokenRenewalAmount: undefined,
+    planSeats: 1,
+    creatorUserId: 'mock-user-123',
+    subscriptionTokens: 150,
+    paidTokens: null,
+    userRole: 'owner',
+    createdAt: new Date().toISOString(),
+    planSubscribeDate: new Date().toISOString(),
+    rolloverTokens: 0,
+    members: [
+        {
+            id: 'mock-member-1',
+            userId: 'mock-user-123',
+            role: 'owner',
+            name: 'Demo User',
+        },
+    ],
+};
+
+// ============================================================================
 // Initial State
 // ============================================================================
 
 const initialState: UserState = {
-    id: '',
-    sub: '',
-    email: '',
-    username: '',
-    avatar: '',
+    id: 'mock-user-123',
+    sub: 'mock-sub-123',
+    email: 'demo@leonardo.ai',
+    username: 'DemoUser',
+    avatar: 'https://i.pravatar.cc/150?u=demo@leonardo.ai',
     plan: 'FREE',
-    loaded: false,
+    loaded: true,
     tokens: 150,
-    teams: [],
-    tokenRenewalDate: undefined,
+    teams: [MOCK_TEAM],
+    tokenRenewalDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     apiPlanTokenRenewalDate: undefined,
-    auth0Email: undefined,
+    auth0Email: 'demo@leonardo.ai',
 };
 
 // ============================================================================

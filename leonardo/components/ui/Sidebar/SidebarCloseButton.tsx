@@ -1,7 +1,7 @@
 "use client";
 
 import { type FC } from "react";
-import { useSidebar } from "../../navigation/sidebar/SidebarContext";
+import { useSidebar } from "./SidebarContext";
 import { cn } from "@/lib/utils";
 import { CloseIcon } from "@/components/icons/CloseIcon";
 

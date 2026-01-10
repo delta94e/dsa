@@ -1,7 +1,7 @@
 "use client";
 
 import { type ComponentPropsWithoutRef } from "react";
-import { useSidebar } from "../../navigation/sidebar/SidebarContext";
+import { useSidebar } from "./SidebarContext";
 import { cn } from "@/lib/utils";
 
 // ============================================================================

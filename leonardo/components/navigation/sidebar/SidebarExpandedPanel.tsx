@@ -1,12 +1,11 @@
 "use client";
 
-import { type FC, type ReactNode } from "react";
-import Image from "next/image";
-import { useSession } from "next-auth/react";
-import { cn } from "@/lib/utils";
-import { ROUTE } from "@/constants/routes";
 import { ExternalUrls } from "@/constants/externalUrls";
-import { track, SidebarNavigationEvents } from "@/lib/analytics";
+import { ROUTE } from "@/constants/routes";
+import { SidebarNavigationEvents, track } from "@/lib/analytics";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import { type FC } from "react";
 
 // Components
 import { LiquidGlassCard } from "@/components/ui/LiquidGlassCard";
@@ -14,18 +13,20 @@ import { ExpandedNavItem } from "./ExpandedNavItem";
 import { SocialLinksFooter } from "./SocialLinksFooter";
 
 // Icons
-import { FlowStateIcon } from "@/components/icons/FlowStateIcon";
-import { RealtimeDrawIcon } from "@/components/icons/RealtimeDrawIcon";
-import { RealtimeGenIcon } from "@/components/icons/RealtimeGenIcon";
-import { TextureIcon } from "@/components/icons/TextureIcon";
-import { CanvasEditorIcon } from "@/components/icons/CanvasEditorIcon";
-import { FineTunedModelIcon } from "@/components/icons/FineTunedModelIcon";
-import { GraduationCapIcon } from "@/components/icons/GraduationCapIcon";
-import { LifeRingOutlineIcon } from "@/components/icons/LifeRingOutlineIcon";
-import { PremiumIcon } from "@/components/icons/PremiumIcon";
 import { ApiIcon } from "@/components/icons/ApiIcon";
+import { CanvasIcon } from "@/components/icons/CanvasIcon";
+import { FlowStateIcon } from "@/components/icons/FlowStateIcon";
+import { PremiumIcon } from "@/components/icons/PremiumIcon";
 import { RocketLaunchIcon } from "@/components/icons/RocketLaunchIcon";
-import { FeedbackIcon } from "@/components/icons/FeedbackIcon";
+import {
+  FeedbackIcon,
+  FineTunedModelIcon,
+  GraduationCapIcon,
+  LifeRingOutlineIcon,
+  RealtimeDrawIcon,
+  RealtimeGenIcon,
+  TextureIcon,
+} from "@/components/icons/SocialIcons";
 
 // Types
 interface SidebarExpandedPanelProps {
@@ -77,7 +78,7 @@ const EXPANDED_MENU_ITEMS: ExpandedMenuItem[] = [
   {
     key: "canvas",
     href: ROUTE.CANVAS,
-    icon: CanvasEditorIcon,
+    icon: CanvasIcon,
     title: "Canvas Editor",
     description: "Edit and refine AI creations",
   },

@@ -8,7 +8,7 @@
  */
 
 import { Flex, Grid, IconButton, Box } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import type { FC, HTMLAttributes } from "react";
 
 import { LeftCaratIcon } from "@/components/icons/LeftCaratIcon";

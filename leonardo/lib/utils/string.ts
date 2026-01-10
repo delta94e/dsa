@@ -5,9 +5,9 @@
  * Matches production bundle module 977125.
  */
 
-import { ROUTE } from '@/constants/routes';
-import { ExternalUrls } from '@/constants/externalUrls';
-import { formatNumberWithCommas } from './number';
+import { ROUTE } from "@/constants/routes";
+import { ExternalUrls } from "@/constants/externalUrls";
+import { formatNumberWithCommas } from "./number";
 
 // ============================================================================
 // User/Username Utilities
@@ -27,31 +27,34 @@ export const getUsernameInitials = (username: string): string =>
  * Check if a URL is internal (belongs to the app)
  */
 export const isInternalUrl = (url: string): boolean => {
-  if (!url || url === '') return false;
+  if (!url || url === "") return false;
 
   // Home route or starts with leonardo app URL
   if (
     url === ROUTE.HOME ||
-    url.startsWith(ExternalUrls.leonardoApp.replace(/\/$/, ''))
+    url.startsWith(ExternalUrls.leonardoApp.replace(/\/$/, ""))
   ) {
     return true;
   }
 
   // Check if URL matches any route (without leading slash)
-  const cleanUrl = url.replace(/^\//, '');
+  const cleanUrl = url.replace(/^\//, "");
   return Object.values(ROUTE).some(
     (route) =>
-      route !== ROUTE.HOME && cleanUrl.startsWith(route.replace(/^\//, ''))
+      route !== ROUTE.HOME && cleanUrl.startsWith(route.replace(/^\//, ""))
   );
 };
 
 /**
  * Check if a URL has a specific file extension
  */
-export const isUrlWithExtension = (url: string, extension?: string): boolean => {
+export const isUrlWithExtension = (
+  url: string,
+  extension?: string
+): boolean => {
   const isValidUrl =
     /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(url);
-  const hasExtension = /\/[^\/].*\.\w+$/.test(url.replace('//', ''));
+  const hasExtension = /\/[^\/].*\.\w+$/.test(url.replace("//", ""));
   return isValidUrl && hasExtension && (!extension || url.endsWith(extension));
 };
 
@@ -62,7 +65,7 @@ export const isUrlWithExtension = (url: string, extension?: string): boolean => 
 /**
  * Remove all spaces from a string
  */
-export const removeSpaces = (str: string): string => str.replace(/ /g, '');
+export const removeSpaces = (str: string): string => str.replace(/ /g, "");
 
 /**
  * Capitalize the first letter of each sentence
@@ -73,8 +76,15 @@ export function capitalizeSentences(text: string): string {
     .map((part, index) =>
       index % 2 === 0 ? part.charAt(0).toUpperCase() + part.slice(1) : part
     )
-    .join('');
+    .join("");
 }
+
+/**
+ * Capitalize the first letter of a string
+ */
+export const capitalizeFirstLetter = (str: string): string => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 
 /**
  * Sanitize a filename by removing invalid characters
@@ -84,17 +94,17 @@ export const sanitizeFilename = (filename: string): string => {
   // Remove invalid characters and fix consecutive dots
   let sanitized = filename
     .trim()
-    .replace(/[\/\?<>\\:\*\|"]/g, '')
-    .replace(/(?<!\.)\.\.(?!\.)/g, '.');
+    .replace(/[\/\?<>\\:\*\|"]/g, "")
+    .replace(/(?<!\.)\.\.(?!\.)/g, ".");
 
   if (sanitized.length <= 255) return sanitized;
 
   // Handle extension preservation for long filenames
-  const lastDot = sanitized.lastIndexOf('.');
+  const lastDot = sanitized.lastIndexOf(".");
   const extension =
     lastDot > 0 && lastDot < sanitized.length - 1
       ? sanitized.slice(lastDot)
-      : '';
+      : "";
 
   return (
     (extension ? sanitized.slice(0, lastDot) : sanitized).slice(
@@ -113,7 +123,7 @@ export const sanitizeFilename = (filename: string): string => {
  */
 export const getNumericalInputValue = (
   input: { value: string },
-  type: 'integer' | 'float',
+  type: "integer" | "float",
   min: number,
   max: number,
   defaultValue?: number
@@ -123,7 +133,10 @@ export const getNumericalInputValue = (
     : Number(input.value);
   const intValue = parseInt(input.value) || defaultValue || min;
 
-  return Math.min(Math.max(type === 'integer' ? intValue : floatValue, min), max);
+  return Math.min(
+    Math.max(type === "integer" ? intValue : floatValue, min),
+    max
+  );
 };
 
 /**
@@ -132,7 +145,7 @@ export const getNumericalInputValue = (
 export const snapNumberToStep = (
   value: number,
   step: number,
-  mode: 'round' | 'floor' | 'ceil' = 'round'
+  mode: "round" | "floor" | "ceil" = "round"
 ): number => Math[mode](value / step) * step;
 
 // ============================================================================
@@ -150,14 +163,14 @@ export const formatNumberAsFloatingString = (
 
   if (isNaN(Number(value)) || decimalPlaces <= 0) return str;
 
-  if (str.includes('.')) {
-    const [intPart, decPart] = str.split('.');
+  if (str.includes(".")) {
+    const [intPart, decPart] = str.split(".");
     return decPart.length >= decimalPlaces
       ? `${intPart}.${decPart.slice(0, decimalPlaces)}`
-      : `${intPart}.${decPart.padEnd(decimalPlaces, '0')}`;
+      : `${intPart}.${decPart.padEnd(decimalPlaces, "0")}`;
   }
 
-  return `${str}.${'0'.repeat(decimalPlaces)}`;
+  return `${str}.${"0".repeat(decimalPlaces)}`;
 };
 
 /**
@@ -169,9 +182,9 @@ export const formatPlural = (
   fallback?: string | true
 ): string => {
   if (!count || count < 0) {
-    return fallback === true ? word + 's' : fallback || '';
+    return fallback === true ? word + "s" : fallback || "";
   }
-  return `${count} ${word}${count === 1 ? '' : 's'}`;
+  return `${count} ${word}${count === 1 ? "" : "s"}`;
 };
 
 /**
@@ -185,7 +198,7 @@ export const formatTokenValue = (
 
   const showMax = max !== undefined && max !== 0;
   return `${formatNumberWithCommas(current)}${
-    showMax ? ` / ${formatNumberWithCommas(max)}` : ''
+    showMax ? ` / ${formatNumberWithCommas(max)}` : ""
   }`;
 };
 
@@ -196,11 +209,11 @@ interface AbbreviationResult {
 }
 
 const SUFFIXES = [
-  { suffix: '', value: 1 },
-  { suffix: 'K', value: 1e3 },
-  { suffix: 'M', value: 1e6 },
-  { suffix: 'B', value: 1e9 },
-  { suffix: 'T', value: 1e12 },
+  { suffix: "", value: 1 },
+  { suffix: "K", value: 1e3 },
+  { suffix: "M", value: 1e6 },
+  { suffix: "B", value: 1e9 },
+  { suffix: "T", value: 1e12 },
 ] as const;
 
 /**
@@ -218,8 +231,7 @@ function abbreviateNumber(
   if (forcedSuffix) {
     tier = SUFFIXES.find((s) => s.suffix === forcedSuffix) || SUFFIXES[0];
   } else {
-    tier =
-      [...SUFFIXES].reverse().find((s) => value >= s.value) || SUFFIXES[0];
+    tier = [...SUFFIXES].reverse().find((s) => value >= s.value) || SUFFIXES[0];
   }
 
   let number = value / tier.value;
@@ -242,7 +254,7 @@ function abbreviateNumber(
  */
 export const formatTokensWithSuffix = (
   value: number,
-  prefix: string = '',
+  prefix: string = "",
   maxDigits: number = 5,
   decimalPlaces: number = 1
 ): string => {
@@ -255,7 +267,7 @@ export const formatTokensWithSuffix = (
   });
 
   const formattedNumber = formatNumberWithCommas(number);
-  const prefixStr = prefix && wasRounded ? `${prefix} ` : '';
+  const prefixStr = prefix && wasRounded ? `${prefix} ` : "";
 
   return `${prefixStr}${formattedNumber}${suffix}`;
 };
@@ -267,9 +279,9 @@ export const formatNumberAsStringDifference = (
   value: number,
   withParentheses: boolean = true
 ): string => {
-  if (value === 0) return '';
+  if (value === 0) return "";
 
-  const sign = value > 0 ? '+' : '';
+  const sign = value > 0 ? "+" : "";
   const formatted = `${sign}${formatNumberWithCommas(value)}`;
 
   return withParentheses ? `(${formatted})` : formatted;
@@ -283,7 +295,7 @@ export const pluralize = (
   singular: string,
   plural: string
 ): string => {
-  return new Intl.PluralRules('en-US').select(count) !== 'one'
+  return new Intl.PluralRules("en-US").select(count) !== "one"
     ? plural
     : singular;
 };
@@ -292,7 +304,7 @@ export const pluralize = (
 // Text Formatting/Segmentation
 // ============================================================================
 
-type TextFormatType = 'normal' | 'highlight' | 'bold';
+type TextFormatType = "normal" | "highlight" | "bold";
 
 interface TextSegment {
   text: string;
@@ -300,24 +312,36 @@ interface TextSegment {
 }
 
 interface MarkerMatch {
-  format: 'highlight' | 'bold';
-  type: 'start' | 'end' | 'both';
+  format: "highlight" | "bold";
+  type: "start" | "end" | "both";
   index: number;
 }
 
 function findMarker(
   text: string,
   startIndex: number,
-  format: 'highlight' | 'bold',
-  markerType: 'start' | 'end' | 'both'
+  format: "highlight" | "bold",
+  markerType: "start" | "end" | "both"
 ): MarkerMatch {
-  if (format === 'highlight' && markerType === 'start') {
-    return { format: 'highlight', type: 'start', index: text.indexOf('[[', startIndex) };
+  if (format === "highlight" && markerType === "start") {
+    return {
+      format: "highlight",
+      type: "start",
+      index: text.indexOf("[[", startIndex),
+    };
   }
-  if (format === 'highlight' && markerType === 'end') {
-    return { format: 'highlight', type: 'end', index: text.indexOf(']]', startIndex) };
+  if (format === "highlight" && markerType === "end") {
+    return {
+      format: "highlight",
+      type: "end",
+      index: text.indexOf("]]", startIndex),
+    };
   }
-  return { format: 'bold', type: 'both', index: text.indexOf('**', startIndex) };
+  return {
+    format: "bold",
+    type: "both",
+    index: text.indexOf("**", startIndex),
+  };
 }
 
 function findFirstMarker(markers: MarkerMatch[]): MarkerMatch | undefined {
@@ -334,30 +358,30 @@ function findFirstMarker(markers: MarkerMatch[]): MarkerMatch | undefined {
  */
 export function segmentTextByFormatMarkers(
   text: string,
-  formats: Array<'highlight' | 'bold'> = ['highlight', 'bold']
+  formats: Array<"highlight" | "bold"> = ["highlight", "bold"]
 ): TextSegment[] {
   const segments: TextSegment[] = [];
   let currentIndex = 0;
   let textStartIndex = 0;
 
   while (currentIndex < text.length) {
-    const highlightStart = findMarker(text, currentIndex, 'highlight', 'start');
-    const boldMarker = findMarker(text, currentIndex, 'bold', 'both');
+    const highlightStart = findMarker(text, currentIndex, "highlight", "start");
+    const boldMarker = findMarker(text, currentIndex, "bold", "both");
 
     // Filter by enabled formats
-    if (!formats.includes('highlight')) highlightStart.index = -1;
-    if (!formats.includes('bold')) boldMarker.index = -1;
+    if (!formats.includes("highlight")) highlightStart.index = -1;
+    if (!formats.includes("bold")) boldMarker.index = -1;
 
     // No more markers found
     if (highlightStart.index === -1 && boldMarker.index === -1) {
-      segments.push({ text: text.slice(textStartIndex), type: 'normal' });
+      segments.push({ text: text.slice(textStartIndex), type: "normal" });
       textStartIndex = text.length;
       break;
     }
 
     const firstMarker = findFirstMarker([highlightStart, boldMarker]);
     if (!firstMarker) {
-      segments.push({ text: text.slice(textStartIndex), type: 'normal' });
+      segments.push({ text: text.slice(textStartIndex), type: "normal" });
       textStartIndex = text.length;
       break;
     }
@@ -365,13 +389,13 @@ export function segmentTextByFormatMarkers(
     // Find closing marker
     const nextIndex = firstMarker.index + 2;
     const endMarker = findFirstMarker([
-      findMarker(text, nextIndex, 'highlight', 'start'),
-      findMarker(text, nextIndex, 'bold', 'both'),
-      findMarker(text, nextIndex, 'highlight', 'end'),
+      findMarker(text, nextIndex, "highlight", "start"),
+      findMarker(text, nextIndex, "bold", "both"),
+      findMarker(text, nextIndex, "highlight", "end"),
     ]);
 
     if (!endMarker) {
-      segments.push({ text: text.slice(textStartIndex), type: 'normal' });
+      segments.push({ text: text.slice(textStartIndex), type: "normal" });
       textStartIndex = text.length;
       break;
     }
@@ -379,11 +403,12 @@ export function segmentTextByFormatMarkers(
     // Check if markers match and close properly
     if (
       firstMarker.format === endMarker.format &&
-      ['end', 'both'].includes(endMarker.type)
+      ["end", "both"].includes(endMarker.type)
     ) {
       // Handle empty markers (e.g., "****" or "[[]]")
       if (firstMarker.index + 2 === endMarker.index) {
-        text = text.slice(0, firstMarker.index) + text.slice(endMarker.index + 2);
+        text =
+          text.slice(0, firstMarker.index) + text.slice(endMarker.index + 2);
         continue;
       }
 
@@ -391,7 +416,7 @@ export function segmentTextByFormatMarkers(
       if (firstMarker.index > currentIndex) {
         segments.push({
           text: text.slice(textStartIndex, firstMarker.index),
-          type: 'normal',
+          type: "normal",
         });
       }
 
@@ -411,8 +436,21 @@ export function segmentTextByFormatMarkers(
 
   // Add remaining text
   if (textStartIndex < text.length) {
-    segments.push({ text: text.slice(textStartIndex), type: 'normal' });
+    segments.push({ text: text.slice(textStartIndex), type: "normal" });
   }
 
   return segments;
 }
+
+export const limitString = (
+  str: string | undefined | null,
+  limit: number = 50
+): string => {
+  if (!str) return "";
+  return str.length <= limit - 3 ? str : str.substring(0, limit - 3) + "...";
+};
+
+export const isNumericString = (str: string): boolean => /^\d+$/.test(str);
+
+export const filterLineBreaksStr = (str: string): string =>
+  str.replace(/\r?\n|\r/g, "");

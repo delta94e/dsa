@@ -7,8 +7,147 @@
  * Matches production bundle module 262975.
  */
 
-import type { FC } from "react";
+import React, { type FC, type ReactNode } from "react";
+import {
+  VStack,
+  Flex,
+  Divider,
+  Heading,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
+import { CheckCircleOutlineIcon } from "@/components/icons/CheckCircleOutlineIcon";
+import { QuestionCircleIcon } from "@/components/icons/QuestionCircleIcon";
+import { GRADIENTS } from "@/constants/styles";
 import { TEAM_PLANS_COST_PER_SEAT } from "@/constants/plans";
+import { segmentTextByFormatMarkers } from "@/lib/utils/string";
+import { SelectablePlanCard } from "./SelectablePlanCard";
+import { TeamPlanCardHeader } from "./TeamPlanCardHeader";
+import { PrimaryBenefits, PrimaryBenefit } from "./PrimaryBenefits";
+
+// Helper component to render formatted text with markers
+const FormattedText: FC<{ text: string }> = ({ text }) => (
+  <>
+    {segmentTextByFormatMarkers(text).map((segment, idx) => (
+      <Text
+        key={idx}
+        as="span"
+        variant={segment.type === "highlight" ? "textAccent" : undefined}
+        fontWeight={
+          ["highlight", "bold"].includes(segment.type) ? "semibold" : "normal"
+        }
+      >
+        {segment.text}
+      </Text>
+    ))}
+  </>
+);
+
+// Feature item component
+const FeatureItem: FC<{
+  icon: ReactNode;
+  text: string | string[];
+  tooltipText?: string;
+}> = ({ icon, text, tooltipText }) => (
+  <div className="flex items-start gap-2">
+    <span className="text-highlight-foreground mt-0.5 flex h-4 w-4 shrink-0">
+      {icon}
+    </span>
+    <Text fontSize="xs">
+      {typeof text === "string" && <FormattedText text={text} />}
+      {Array.isArray(text) &&
+        text.map((line, idx) => {
+          const isLast = idx === text.length - 1;
+          return (
+            <React.Fragment key={line}>
+              <FormattedText text={line} />
+              {!isLast && <br />}
+            </React.Fragment>
+          );
+        })}
+      {tooltipText && (
+        <Tooltip
+          label={tooltipText}
+          aria-label={tooltipText}
+          hasArrow
+          placement="auto"
+          fontSize="sm"
+        >
+          <button
+            style={{ display: "inline", marginLeft: 4 }}
+            aria-label={tooltipText}
+            data-interactive
+          >
+            <QuestionCircleIcon cursor="pointer" />
+          </button>
+        </Tooltip>
+      )}
+    </Text>
+  </div>
+);
+
+// Benefits section component
+const BenefitsSection: FC<{ heading: ReactNode; children: ReactNode }> = ({
+  heading,
+  children,
+}) => (
+  <VStack
+    gap={3}
+    px={3}
+    py={4}
+    rounded="xl"
+    bg="background.tealblue"
+    alignItems="stretch"
+    flexGrow={1}
+  >
+    <Heading as="h3" fontSize="sm">
+      {heading}
+    </Heading>
+    <Divider
+      sx={{
+        border: "none",
+        height: "1px",
+        background: GRADIENTS.PURPLE_THREE,
+      }}
+    />
+    <Flex
+      direction="column"
+      gap={4}
+      color="lightbluegrey"
+      fontWeight="normal"
+      as="ul"
+      width="100%"
+    >
+      {children}
+    </Flex>
+  </VStack>
+);
+
+const GROWTH_COST_PER_SEAT = TEAM_PLANS_COST_PER_SEAT.GROWTH ?? 48;
+
+const GROWTH_FEATURES: (string | [string, string])[] = [
+  [
+    `${(60000).toLocaleString()}  Fast Tokens Per Seat`,
+    "Resets on your Billing Date",
+  ],
+  `${(180000).toLocaleString()} Rollover Token Bank Capacity Per Seat`,
+  "Unlimited Image Generation at a relaxed pace*",
+  "Unlimited Video Generation at a relaxed pace*",
+  "Unlimited generation excludes Flow State, GPT-1, Flux Kontext, Ideogram, Nano Banana, Flux Kontext Max, Veo 3, Kling 2.5 Turbo, Kling 2.1 Pro, Sora 2 and Sora 2 Pro",
+  "Create Private Team Generations",
+  "Ability to train AI models using team tokens",
+  "Unlimited collections – organize all your creations",
+  "Unlimited Realtime Canvas actions",
+  "Unlimited Realtime Generation actions",
+  "Run 6 generations simultaneously",
+  "Queue up to 20 generations at once",
+  "Unlock Enhanced Quality",
+];
+
+interface ActionButtonProps {
+  displayActionButton?: boolean;
+  // Add other action button props as needed
+}
 
 interface SelectableGrowthTeamPlanCardProps {
   isSelected: boolean;
@@ -16,16 +155,9 @@ interface SelectableGrowthTeamPlanCardProps {
   numberOfSeats: number;
   badgeText?: string;
   onSelect: () => void;
+  actionButtonProps?: ActionButtonProps;
   className?: string;
 }
-
-const GROWTH_FEATURES = [
-  "17,000 tokens per seat/month",
-  "Everything in Starter",
-  "Advanced team analytics",
-  "Custom branding",
-  "API access",
-];
 
 export const SelectableGrowthTeamPlanCard: FC<
   SelectableGrowthTeamPlanCardProps
@@ -35,84 +167,55 @@ export const SelectableGrowthTeamPlanCard: FC<
   numberOfSeats,
   badgeText,
   onSelect,
-  className = "",
+  actionButtonProps,
+  ...rest
 }) => {
-  const costPerSeat = TEAM_PLANS_COST_PER_SEAT.GROWTH ?? 48;
-  const totalCost = costPerSeat * numberOfSeats;
+  const { displayActionButton } = actionButtonProps || {};
+  const isSelectable = !displayActionButton && !isCurrentPlan;
 
   return (
-    <div
-      onClick={onSelect}
-      className={`relative flex flex-1 cursor-pointer flex-col rounded-xl border-2 p-4 transition-all ${
-        isSelected
-          ? "border-primary bg-surface-secondary"
-          : "border-border hover:border-primary/50"
-      } ${className}`}
+    <SelectablePlanCard
+      onSelect={isSelectable ? onSelect : undefined}
+      showBorder={isSelectable && isSelected}
+      badgeText={badgeText}
+      {...rest}
     >
-      {badgeText && (
-        <div className="bg-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium text-white">
-          {badgeText}
-        </div>
-      )}
-
-      {isCurrentPlan && !badgeText && (
-        <div className="bg-secondary absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-medium">
-          Current Plan
-        </div>
-      )}
-
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Growth</h3>
-        <div
-          className={`flex size-5 items-center justify-center rounded-full border-2 ${
-            isSelected ? "border-primary bg-primary" : "border-border"
-          }`}
-        >
-          {isSelected && (
-            <svg
-              className="size-3 text-white"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          )}
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <div className="flex items-baseline gap-1">
-          <span className="text-3xl font-bold">${costPerSeat}</span>
-          <span className="text-secondary-foreground text-sm">/seat/mo</span>
-        </div>
-        <p className="text-secondary-foreground mt-1 text-sm">
-          ${totalCost}/month for {numberOfSeats} seats
-        </p>
-      </div>
-
-      <ul className="space-y-2">
-        {GROWTH_FEATURES.map((feature, index) => (
-          <li key={index} className="flex items-center gap-2 text-sm">
-            <svg
-              className="text-primary size-4 flex-shrink-0"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            {feature}
-          </li>
+      <TeamPlanCardHeader
+        isCurrentPlan={isCurrentPlan}
+        isSelected={isSelected}
+        planName="Growth"
+        planNameStyle="gradient"
+        pricePerSeat={GROWTH_COST_PER_SEAT}
+        numberOfSeats={numberOfSeats}
+        actionButtonProps={actionButtonProps}
+      />
+      <BenefitsSection
+        heading={
+          <PrimaryBenefits>
+            <PrimaryBenefit
+              heading={`[[${(
+                60000 * numberOfSeats
+              ).toLocaleString()}]] Shared Tokens`}
+            />
+            <PrimaryBenefit
+              heading={`[[${(
+                180000 * numberOfSeats
+              ).toLocaleString()}]] Bank Capacity`}
+            />
+          </PrimaryBenefits>
+        }
+      >
+        {GROWTH_FEATURES.map((feature, idx) => (
+          <FeatureItem
+            key={idx}
+            icon={
+              <CheckCircleOutlineIcon className="text-highlight-foreground h-4 w-4 shrink-0" />
+            }
+            text={feature}
+          />
         ))}
-      </ul>
-    </div>
+      </BenefitsSection>
+    </SelectablePlanCard>
   );
 };
 

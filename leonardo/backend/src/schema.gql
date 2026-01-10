@@ -1,0 +1,157 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AwsMarketplaceSubscription {
+  awsMpSubscriptionStatus: String
+  awsMpSubscriptionType: String
+  id: ID!
+}
+
+type GetUserStateResponse {
+  state: String
+}
+
+type Mutation {
+  insert_teams_one(plan: String, teamName: String): Team!
+}
+
+type Query {
+  getTeamPlanOfferDetails: TeamPlanOfferDetails!
+  getUserState(type: UserStateType! = Activity): GetUserStateResponse!
+  queryUserRetentions: UserRetentions!
+  team_membership(userId: String): [TeamMembershipWithId!]!
+  teams: [Team!]!
+  users(userSub: String): [User!]!
+  usersWithAwsSubscriptions(userSub: String): [UserWithAwsSubscriptions!]!
+}
+
+type Team {
+  akUUID: ID!
+  createdAt: String
+  creatorUserId: String
+  id: ID!
+  members: [TeamMember!]!
+  modifiedAt: String
+  paidTokens: Int
+  paymentPlatformId: String
+  plan: String
+  planCustomTokenRenewalAmount: Int
+  planSeats: Int
+  planSubscribeDate: String
+  planSubscribeFrequency: String
+  planSubscriptionSource: String
+  planTokenRenewalDate: String
+  rolloverTokens: Int
+  subscriptionTokens: Int
+  teamLogoUrl: String
+  teamName: String
+}
+
+type TeamMember {
+  createdAt: String!
+  role: String!
+  teamId: ID!
+  userId: ID!
+}
+
+type TeamMembership {
+  role: String!
+  team: Team!
+  teamId: ID!
+  userId: ID!
+}
+
+type TeamMembershipWithId {
+  id: ID!
+  role: String!
+  team: Team!
+  teamId: ID!
+  userId: ID!
+}
+
+type TeamPlanOfferDetails {
+  annualUnitPrice: Float!
+  currency: String!
+  discountPercentage: Float!
+  monthlyUnitPrice: Float!
+  priceId: String!
+  productType: String!
+  tokensPerMonth: Int!
+}
+
+type TosAcceptance {
+  acceptedAt: String!
+  tosHash: String!
+}
+
+type User {
+  blocked: Boolean
+  createdAt: String!
+  id: ID!
+  suspensionStatus: String
+  team_memberships: [TeamMembership!]!
+  tos_acceptances: [TosAcceptance!]!
+  user_details: [UserDetails!]!
+  username: String
+}
+
+type UserDetails {
+  apiConcurrencySlots: Int
+  apiCredit: Float
+  apiPaidTokens: Int
+  apiPlan: String
+  apiPlanAutoTopUpTriggerBalance: Int
+  apiPlanSubscribeDate: String
+  apiPlanSubscribeFrequency: String
+  apiPlanSubscriptionSource: String
+  apiPlanTokenRenewalDate: String
+  apiPlanTopUpAmount: Int
+  apiSubscriptionTokens: Int
+  auth0Email: String
+  cognitoId: String
+  customApiTokenRenewalAmount: Int
+  id: ID!
+  interests: [String!]
+  interestsRoles: [String!]
+  interestsRolesOther: String
+  isChangelogVisible: Boolean
+  lastSeenChangelogId: String
+  paddleId: String
+  paidTokens: Int
+  plan: String
+  planSubscribeFrequency: String
+  rolloverTokens: Int
+  showNsfw: Boolean
+  streamTokens: Int
+  subscriptionGptTokens: Int
+  subscriptionModelTokens: Int
+  subscriptionSource: String
+  subscriptionTokens: Int
+  tokenRenewalDate: String
+}
+
+type UserRetentions {
+  activationGracePeriod: Int!
+  lastShowingDate: String
+  offerAccepted: Boolean!
+  offerActivated: Boolean!
+  offers: [String!]!
+  offersEnabled: Boolean!
+  showingsCurrentCount: Int!
+  showingsMaxCount: Int!
+  showingsMinInterval: Int!
+}
+
+"""Type of user state to retrieve"""
+enum UserStateType {
+  Activity
+  ImageGeneration
+  Onboarding
+  Preferences
+  VideoGeneration
+}
+
+type UserWithAwsSubscriptions {
+  aws_marketplace_subscriptions: [AwsMarketplaceSubscription!]!
+}

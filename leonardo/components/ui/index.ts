@@ -1,9 +1,9 @@
 // UI Components barrel export
 
-export { Button } from './Button';
-export { Badge } from './Badge';
-export { IconButton } from './IconButton';
-export { LiquidGlassCard } from './LiquidGlassCard';
+export { Button } from "./Button";
+export { Badge } from "./Badge";
+export { IconButton } from "./IconButton";
+export { LiquidGlassCard } from "./LiquidGlassCard";
 export {
   Popover,
   PopoverAnchor,
@@ -12,9 +12,9 @@ export {
   PopoverCloseButton,
   PopoverContent,
   PopoverTrigger,
-} from './Popover';
-export { Avatar, AvatarImage, AvatarFallback } from './Avatar';
-export { AvatarWithName } from './AvatarWithName';
+} from "./Popover";
+export { Avatar, AvatarImage, AvatarFallback } from "./Avatar";
+export { AvatarWithName } from "./AvatarWithName";
 export {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -31,6 +31,41 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
-} from './DropdownMenu';
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
-
+} from "./DropdownMenu";
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "./Tooltip";
+export { Input, inputVariants, type InputProps } from "./Input";
+export {
+  Dialog,
+  DialogTrigger,
+  DialogPortal,
+  DialogClose,
+  DialogCloseButton,
+  DialogOverlay,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  DialogTitle,
+  dialogContentVariants,
+} from "./Dialog";
+export {
+  SplitDialog,
+  SplitDialogTrigger,
+  SplitDialogClose,
+  SplitDialogCloseButton,
+  SplitDialogContent,
+  SplitDialogHeader,
+  SplitDialogTitle,
+  SplitDialogBody,
+  SplitDialogMedia,
+  SplitDialogMain,
+  SplitDialogIconBadge,
+  SplitDialogMediaOverlay,
+  SplitDialogFooter,
+} from "./SplitDialog";
+export { Dropzone } from "./Dropzone";

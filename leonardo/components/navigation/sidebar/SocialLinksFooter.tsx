@@ -8,13 +8,15 @@ import { track, SidebarNavigationEvents } from "@/lib/analytics";
 import { useFlags } from "@/hooks/useFlags";
 
 // Icons
-import { GlobeIcon } from "@/components/icons/GlobeIcon";
-import { DiscordIcon } from "@/components/icons/DiscordIcon";
-import { RedditIcon } from "@/components/icons/RedditIcon";
-import { XTwitterIcon } from "@/components/icons/XTwitterIcon";
-import { FacebookIcon } from "@/components/icons/FacebookIcon";
-import { AppleIcon } from "@/components/icons/AppleIcon";
-import { PlaystoreIcon } from "@/components/icons/PlaystoreIcon";
+import {
+  GlobeIcon,
+  DiscordIcon,
+  RedditIcon,
+  XTwitterIcon,
+  FacebookIcon,
+  AppleIcon,
+  PlaystoreIcon,
+} from "@/components/icons/SocialIcons";
 
 // Types
 interface SocialLinkProps {

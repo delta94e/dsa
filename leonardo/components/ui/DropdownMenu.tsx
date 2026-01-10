@@ -8,8 +8,33 @@ import { cn } from "@/lib/utils";
 // Re-export Radix Primitives
 // ============================================================================
 
-const DropdownMenu = DropdownMenuPrimitive.Root;
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+function DropdownMenu({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
+  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
+}
+
+interface DropdownMenuTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger> {
+  folderName?: string;
+}
+
+const DropdownMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  DropdownMenuTriggerProps
+>(({ asChild = true, folderName, ...props }, ref) => (
+  <DropdownMenuPrimitive.Trigger
+    ref={ref}
+    data-slot="dropdown-menu-trigger"
+    asChild={asChild}
+    role="button"
+    aria-haspopup="menu"
+    aria-label={folderName ? `${folderName} Menu` : undefined}
+    {...props}
+  />
+));
+DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
+
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
 const DropdownMenuSub = DropdownMenuPrimitive.Sub;
@@ -22,13 +47,14 @@ const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
+>(({ className, sideOffset = 2, ...props }, ref) => (
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Content
       ref={ref}
+      data-slot="dropdown-menu-content"
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-lg border border-white/10 bg-[#0d0f14] p-1 text-white shadow-lg shadow-black/20",
+        "z-popover border-primary bg-primary shadow-glow",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -36,6 +62,7 @@ const DropdownMenuContent = React.forwardRef<
         "data-[side=left]:slide-in-from-right-2",
         "data-[side=right]:slide-in-from-left-2",
         "data-[side=top]:slide-in-from-bottom-2",
+        "relative max-h-(--radix-dropdown-menu-content-available-height) max-w-[17.5rem] min-w-[7.5rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-lg border",
         className
       )}
       {...props}
@@ -56,9 +83,12 @@ const DropdownMenuItem = React.forwardRef<
 >(({ className, inset, ...props }, ref) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
+    data-slot="dropdown-menu-item"
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-sm outline-none",
-      "transition-colors focus:bg-white/10 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "text-primary-foreground hover:bg-hover focus:bg-hover",
+      "relative flex w-full cursor-pointer items-center gap-2 p-2 text-sm outline-hidden select-none",
+      "data-disabled:pointer-events-none data-disabled:bg-transparent data-disabled:opacity-70",
+      "[&_svg]:size-5",
       inset && "pl-8",
       className
     )}
@@ -165,7 +195,8 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-white/10", className)}
+    data-slot="dropdown-menu-separator"
+    className={cn("h-px bg-(--border-primary)", className)}
     {...props}
   />
 ));

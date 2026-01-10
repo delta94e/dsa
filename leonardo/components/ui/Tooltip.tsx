@@ -23,7 +23,11 @@ function Tooltip({ disabled, children, ...props }: TooltipProps) {
   if (disabled) {
     return <>{children}</>;
   }
-  return <TooltipPrimitive.Root {...props}>{children}</TooltipPrimitive.Root>;
+  return (
+    <TooltipProvider>
+      <TooltipPrimitive.Root {...props}>{children}</TooltipPrimitive.Root>
+    </TooltipProvider>
+  );
 }
 
 // ============================================================================

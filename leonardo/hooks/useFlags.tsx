@@ -29,6 +29,10 @@ export interface FeatureFlags {
   enableUniversalUpscaler: boolean;
   /** Enable team name and avatar customization */
   isTeamNameAndAvatarCustomizable: boolean;
+  /** Enable team model overrides feature */
+  isTeamModelOverridesEnabled: boolean;
+  /** Enable shared collections feature */
+  isSharedCollectionsEnabled: boolean;
 }
 
 // ============================================================================
@@ -47,6 +51,7 @@ const defaultFlags: FeatureFlags = {
   enableBlueprints: true,
   enableUniversalUpscaler: true,
   isTeamNameAndAvatarCustomizable: true,
+  isTeamModelOverridesEnabled: false,
 };
 
 // ============================================================================
